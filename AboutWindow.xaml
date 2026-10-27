@@ -1,0 +1,120 @@
+<Window x:Class="MF4CopyStudio.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About Robocopy Tool"
+        Width="420"
+        MinWidth="420"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="#16213E"
+        Foreground="White"
+        FontFamily="Segoe UI Variable, Segoe UI, sans-serif">
+    
+    <Border Background="#16213E" BorderBrush="#2563EB" BorderThickness="1" CornerRadius="12" Margin="20" Padding="28" ClipToBounds="False">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Icon -->
+            <Viewbox Grid.Row="0" Width="48" Height="48" HorizontalAlignment="Center">
+                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" 
+                      Fill="#2563EB"/>
+            </Viewbox>
+
+            <!-- Title -->
+            <TextBlock Grid.Row="1" Text="Robocopy Tool" FontSize="21" FontWeight="SemiBold" 
+                       Foreground="White" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,20,0,0"/>
+
+            <!-- Version -->
+            <TextBlock Grid.Row="2" Text="Version 1.0.0" FontSize="12" Foreground="#94A3B8" 
+                       HorizontalAlignment="Center" TextAlignment="Center" Margin="0,6,0,0"/>
+
+            <!-- Description -->
+            <TextBlock x:Name="DescriptionText" Grid.Row="3" 
+                       Text="A lightweight tool for filtering and copying MF4 measurement files." 
+                       Foreground="#CBD5E1" FontSize="13" TextAlignment="Center" TextWrapping="Wrap" 
+                       MaxWidth="330" HorizontalAlignment="Center" Margin="0,24,0,0"
+                       Visibility="Visible" Opacity="1"/>
+
+            <!-- Copyright -->
+            <TextBlock x:Name="CopyrightText" Grid.Row="4" 
+                       Text="Copyright (c) 2026 Liu Pengfei" 
+                       Foreground="#E2E8F0" FontSize="13" FontWeight="SemiBold"
+                       TextAlignment="Center" TextWrapping="Wrap" 
+                       HorizontalAlignment="Center" Margin="0,20,0,0"
+                       Visibility="Visible" Opacity="1"/>
+
+            <!-- License Info -->
+            <TextBlock Grid.Row="5" 
+                       Text="License: MIT" 
+                       Foreground="#94A3B8" FontSize="12"
+                       TextAlignment="Center" TextWrapping="Wrap" 
+                       HorizontalAlignment="Center" Margin="0,8,0,0"/>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button x:Name="ViewLicenseButton" Content="View MIT License" 
+                        Width="140" Height="36" HorizontalAlignment="Center" Margin="0,0,12,0"
+                        Click="ViewLicenseButton_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                CornerRadius="8" Padding="16,8">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#1D4ED8"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" Value="#1E40AF"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <Button x:Name="CloseButton" Content="Close" 
+                        Width="112" Height="36" HorizontalAlignment="Center"
+                        Click="CloseButton_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                CornerRadius="8" Padding="16,8">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#1D4ED8"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" Value="#1E40AF"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

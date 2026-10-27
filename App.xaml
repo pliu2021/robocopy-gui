@@ -1,0 +1,23 @@
+<Application x:Class="MF4CopyStudio.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:MF4CopyStudio.Converters"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Load design tokens first -->
+                <ResourceDictionary Source="Styles/DesignTokens.xaml"/>
+                <!-- Load custom styles -->
+                <ResourceDictionary Source="Styles/Colors.xaml"/>
+                <ResourceDictionary Source="Styles/Buttons.xaml"/>
+                <ResourceDictionary Source="Styles/ScrollBars.xaml"/>
+                <ResourceDictionary Source="Styles/ModernScrollBars.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Converters -->
+            <converters:IntToBoolConverter x:Key="IntToBoolConverter"/>
+            <converters:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,94 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    
+    <!-- ========================================
+         SPACING TOKENS
+         ======================================== -->
+    <sys:Double x:Key="Spacing2">2</sys:Double>
+    <sys:Double x:Key="Spacing4">4</sys:Double>
+    <sys:Double x:Key="Spacing6">6</sys:Double>
+    <sys:Double x:Key="Spacing8">8</sys:Double>
+    <sys:Double x:Key="Spacing10">10</sys:Double>
+    <sys:Double x:Key="Spacing12">12</sys:Double>
+    <sys:Double x:Key="Spacing16">16</sys:Double>
+    <sys:Double x:Key="Spacing20">20</sys:Double>
+    <sys:Double x:Key="Spacing24">24</sys:Double>
+    <sys:Double x:Key="Spacing28">28</sys:Double>
+    
+    <!-- Control Heights -->
+    <sys:Double x:Key="ControlHeightSmall">32</sys:Double>
+    <sys:Double x:Key="ControlHeightNormal">40</sys:Double>
+    <sys:Double x:Key="ControlHeightLarge">48</sys:Double>
+    
+    <!-- Corner Radii -->
+    <CornerRadius x:Key="CornerRadiusSmall">6</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusNormal">8</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusCard">12</CornerRadius>
+    
+    <!-- Border Thickness -->
+    <Thickness x:Key="BorderThin">1</Thickness>
+    
+    <!-- ========================================
+         COLOR TOKENS - PAGE & CARD
+         ======================================== -->
+    <SolidColorBrush x:Key="PageBackgroundBrush" Color="#F5F7FA"/>
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="CardBorderBrush" Color="#E4E7EC"/>
+    <SolidColorBrush x:Key="CardHoverBorderBrush" Color="#D0D5DD"/>
+    
+    <!-- Primary Colors (canonical source - Colors.xaml references these via StaticResource) -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#2F6FED"/>
+    <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#235DD8"/>
+    <SolidColorBrush x:Key="PrimaryPressedBrush" Color="#194CBC"/>
+    <SolidColorBrush x:Key="PrimarySoftBrush" Color="#EAF2FF"/>
+    
+    <!-- Text Colors -->
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#101828"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#667085"/>
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#98A2B3"/>
+    
+    <!-- Status Colors -->
+    <SolidColorBrush x:Key="SuccessBrush" Color="#12B76A"/>
+    <SolidColorBrush x:Key="SuccessSoftBrush" Color="#ECFDF3"/>
+    <SolidColorBrush x:Key="WarningBrush" Color="#F79009"/>
+    <SolidColorBrush x:Key="WarningSoftBrush" Color="#FFFAEB"/>
+    <SolidColorBrush x:Key="ErrorBrush" Color="#F04438"/>
+    <SolidColorBrush x:Key="ErrorSoftBrush" Color="#FEF3F2"/>
+    
+    <!-- ========================================
+         ACTIVITY COLORS
+         ======================================== -->
+    <SolidColorBrush x:Key="ActivityBackgroundBrush" Color="#111827"/>
+    <SolidColorBrush x:Key="ActivityHeaderBrush" Color="#171F32"/>
+    <SolidColorBrush x:Key="ActivityBorderBrush" Color="#263147"/>
+    <SolidColorBrush x:Key="ActivityTextBrush" Color="#E5E7EB"/>
+    <SolidColorBrush x:Key="ActivityTimeBrush" Color="#7695C8"/>
+    <SolidColorBrush x:Key="ActivityInfoBrush" Color="#8FB3FF"/>
+    <SolidColorBrush x:Key="ActivityFoundBrush" Color="#60A5FA"/>
+    <SolidColorBrush x:Key="ActivityCopyBrush" Color="#A5B4FC"/>
+    <SolidColorBrush x:Key="ActivitySuccessBrush" Color="#6CE9A6"/>
+    <SolidColorBrush x:Key="ActivityWarningBrush" Color="#FEC84B"/>
+    <SolidColorBrush x:Key="ActivityErrorBrush" Color="#FDA29B"/>
+    
+    <!-- ========================================
+         TYPOGRAPHY
+         ======================================== -->
+    <FontFamily x:Key="PrimaryFontFamily">Segoe UI Variable, Segoe UI, sans-serif</FontFamily>
+    <FontFamily x:Key="MonoFontFamily">Cascadia Mono, Consolas, monospace</FontFamily>
+    
+    <!-- Font Sizes -->
+    <sys:Double x:Key="FontSizeTitle">21</sys:Double>
+    <sys:Double x:Key="FontSizeSectionHeader">11</sys:Double>
+    <sys:Double x:Key="FontSizeCardTitle">13</sys:Double>
+    <sys:Double x:Key="FontSizeFieldLabel">12</sys:Double>
+    <sys:Double x:Key="FontSizeInput">13</sys:Double>
+    <sys:Double x:Key="FontSizeKeyword">11.5</sys:Double>
+    <sys:Double x:Key="FontSizeOverviewLabel">11.5</sys:Double>
+    <sys:Double x:Key="FontSizeOverviewValue">12</sys:Double>
+    <sys:Double x:Key="FontSizeStatusTitle">12</sys:Double>
+    <sys:Double x:Key="FontSizeStatusDescription">11.5</sys:Double>
+    <sys:Double x:Key="FontSizeActivity">11.5</sys:Double>
+    <sys:Double x:Key="FontSizeSecondary">10.5</sys:Double>
+    
+</ResourceDictionary>

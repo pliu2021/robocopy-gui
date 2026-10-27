@@ -1,0 +1,170 @@
+<UserControl x:Class="MF4CopyStudio.Controls.TransferProgressControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Name="Root">
+    
+    <UserControl.Resources>
+        <!-- Diagnostic high-contrast style trigger -->
+        <Style x:Key="DiagnoseProgressBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="#FFFF00"/>
+            <Setter Property="BorderBrush" Value="#000000"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="MinHeight" Value="120"/>
+        </Style>
+        
+        <!-- Modern Transfer Progress Bar Style -->
+        <Style x:Key="ModernTransferProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Background" Value="#E9EEF7"/>
+            <Setter Property="Foreground" Value="#2F6FED"/>
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="100"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid>
+                            <!-- Track -->
+                            <Border Background="{TemplateBinding Background}" 
+                                    CornerRadius="4"
+                                    x:Name="TrackBorder"/>
+                            
+                            <!-- Indicator -->
+                            <Border x:Name="PART_Indicator" 
+                                    CornerRadius="4"
+                                    HorizontalAlignment="Left"
+                                    Margin="0,0,0,0">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#2F6FED" Offset="0"/>
+                                        <GradientStop Color="#5B8DEF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                
+                                <!-- Shimmer effect overlay -->
+                                <Border x:Name="ShimmerLayer" Visibility="Collapsed" Opacity="0.22">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#00FFFFFF" Offset="0"/>
+                                            <GradientStop Color="#FFFFFFFF" Offset="0.5"/>
+                                            <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Border.Triggers>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard>
+                                                <Storyboard RepeatBehavior="Forever">
+                                                    <DoubleAnimation 
+                                                        Storyboard.TargetProperty="(Border.Background).(LinearGradientBrush.GradientStops)[1].Offset"
+                                                        From="-0.5" To="1.5" Duration="0:0:1.8"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Border.Triggers>
+                                </Border>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <!-- Completed state - green -->
+                            <DataTrigger Binding="{Binding ElementName=Root, Path=IsCompleted}" Value="True">
+                                <Setter TargetName="PART_Indicator" Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="#12B76A"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            
+                            <!-- Failed state - red -->
+                            <DataTrigger Binding="{Binding ElementName=Root, Path=IsFailed}" Value="True">
+                                <Setter TargetName="PART_Indicator" Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="#F04438"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            
+                            <!-- Cancelled state - gray -->
+                            <DataTrigger Binding="{Binding ElementName=Root, Path=IsCancelled}" Value="True">
+                                <Setter TargetName="PART_Indicator" Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="#98A2B3"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            
+                            <!-- Indeterminate - show shimmer -->
+                            <DataTrigger Binding="{Binding ElementName=Root, Path=IsIndeterminate}" Value="True">
+                                <Setter TargetName="ShimmerLayer" Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            
+                            <!-- Active copying - show shimmer -->
+                            <DataTrigger Binding="{Binding ElementName=Root, Path=IsActive}" Value="True">
+                                <Setter TargetName="ShimmerLayer" Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid x:Name="DiagnoseHost"
+      Visibility="{Binding IsProgressVisible, ElementName=Root, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+        <StackPanel Margin="0,16,0,12">
+            
+            <!-- Status Header -->
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" 
+                           Text="{Binding ProgressStatusText, ElementName=Root}"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="#101828"
+                           VerticalAlignment="Center"/>
+                
+                <TextBlock Grid.Column="1" 
+                           Text="{Binding ProgressPercentageText, ElementName=Root}"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#101828"
+                           VerticalAlignment="Center"/>
+            </Grid>
+            
+            <!-- Progress Bar -->
+            <ProgressBar Style="{StaticResource ModernTransferProgressBarStyle}"
+                         Value="{Binding ProgressValue, ElementName=Root, Mode=OneWay}"
+                         Minimum="0"
+                         Maximum="100"
+                         IsIndeterminate="{Binding IsProgressIndeterminate, ElementName=Root}"
+                         AutomationProperties.Name="Copy progress"
+                         AutomationProperties.HelpText="{Binding ProgressFileCountText, ElementName=Root}"/>
+            
+            <!-- File Count -->
+            <TextBlock Margin="0,8,0,0"
+                       Text="{Binding ProgressFileCountText, ElementName=Root}"
+                       FontSize="11"
+                       Foreground="#667085"/>
+            
+            <!-- Current Item -->
+            <TextBlock Margin="0,4,0,0"
+                       Text="{Binding ProgressCurrentItemText, ElementName=Root}"
+                       FontSize="11"
+                       Foreground="#667085"
+                       TextTrimming="CharacterEllipsis"
+                       ToolTip="{Binding ProgressCurrentItemText, ElementName=Root}"/>
+            
+            <!-- Trigger Info (for Automatic Run) -->
+            <TextBlock Margin="0,4,0,0"
+                       Text="{Binding ProgressTriggerText, ElementName=Root}"
+                       FontSize="10"
+                       Foreground="#98A2B3"
+                       FontStyle="Italic"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

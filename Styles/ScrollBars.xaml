@@ -1,0 +1,234 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Modern ScrollBar Styles for Robocopy Tool -->
+    
+    <!-- Light Thumb Style (Main Configuration Area) -->
+    <Style x:Key="ModernLightThumbStyle" TargetType="Thumb">
+        <Setter Property="Background" Value="#C7CDD8"/>
+        <Setter Property="MinWidth" Value="6"/>
+        <Setter Property="MinHeight" Value="28"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border x:Name="ThumbBorder"
+                            Width="6"
+                            MinHeight="28"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="3"
+                            SnapsToDevicePixels="True"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#98A2B3"/>
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+                <Setter Property="Background" Value="#667085"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.35"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Dark Thumb Style (Activity Panel) -->
+    <Style x:Key="ModernDarkThumbStyle" TargetType="Thumb">
+        <Setter Property="Background" Value="#475467"/>
+        <Setter Property="MinWidth" Value="6"/>
+        <Setter Property="MinHeight" Value="28"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border x:Name="ThumbBorder"
+                            Width="6"
+                            MinHeight="28"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="3"
+                            SnapsToDevicePixels="True"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#667085"/>
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+                <Setter Property="Background" Value="#98A2B3"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.35"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Light Vertical ScrollBar Template -->
+    <ControlTemplate x:Key="ModernLightVerticalScrollBarTemplate" TargetType="ScrollBar">
+        <Grid Width="10" Background="Transparent" SnapsToDevicePixels="True">
+            <Track x:Name="PART_Track" IsDirectionReversed="True" Orientation="Vertical">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                  Focusable="False"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Opacity="0"/>
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource ModernLightThumbStyle}"/>
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                  Focusable="False"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Opacity="0"/>
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.35"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- Dark Vertical ScrollBar Template -->
+    <ControlTemplate x:Key="ModernDarkVerticalScrollBarTemplate" TargetType="ScrollBar">
+        <Grid Width="10" Background="Transparent" SnapsToDevicePixels="True">
+            <Track x:Name="PART_Track" IsDirectionReversed="True" Orientation="Vertical">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                  Focusable="False"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Opacity="0"/>
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource ModernDarkThumbStyle}"/>
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                  Focusable="False"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Opacity="0"/>
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.35"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- Unified ScrollBar Style with Orientation Triggers -->
+    <Style x:Key="ModernLightScrollBarStyle" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="MinWidth" Value="10"/>
+        <Setter Property="Template" Value="{StaticResource ModernLightVerticalScrollBarTemplate}"/>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="MinWidth" Value="0"/>
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="MinHeight" Value="10"/>
+                <Setter Property="Template" Value="{StaticResource ModernHorizontalScrollBarTemplate}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ModernDarkScrollBarStyle" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="MinWidth" Value="10"/>
+        <Setter Property="Template" Value="{StaticResource ModernDarkVerticalScrollBarTemplate}"/>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="MinWidth" Value="0"/>
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="MinHeight" Value="10"/>
+                <Setter Property="Template" Value="{StaticResource ModernHorizontalScrollBarTemplate}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Horizontal ScrollBar Template (shared) -->
+    <ControlTemplate x:Key="ModernHorizontalScrollBarTemplate" TargetType="ScrollBar">
+        <Grid Height="10" Background="Transparent" SnapsToDevicePixels="True">
+            <Track x:Name="PART_Track" IsDirectionReversed="False" Orientation="Horizontal">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
+                                  Focusable="False"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Opacity="0"/>
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource ModernLightThumbStyle}"/>
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}"
+                                  Focusable="False"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Opacity="0"/>
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.35"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- Dark ScrollViewer for Activity Panel -->
+    <Style x:Key="DarkScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <ScrollContentPresenter Grid.Row="0" Grid.Column="0"
+                                                CanContentScroll="{TemplateBinding CanContentScroll}"
+                                                CanHorizontallyScroll="False"
+                                                CanVerticallyScroll="False"/>
+                        
+                        <ScrollBar Grid.Row="0" Grid.Column="1"
+                                   x:Name="PART_VerticalScrollBar"
+                                   Style="{StaticResource ModernDarkScrollBarStyle}"
+                                   Value="{TemplateBinding VerticalOffset}"
+                                   Maximum="{TemplateBinding ScrollableHeight}"
+                                   ViewportSize="{TemplateBinding ViewportHeight}"
+                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                        
+                        <ScrollBar Grid.Row="1" Grid.Column="0"
+                                   x:Name="PART_HorizontalScrollBar"
+                                   Style="{StaticResource ModernDarkScrollBarStyle}"
+                                   Value="{TemplateBinding HorizontalOffset}"
+                                   Maximum="{TemplateBinding ScrollableWidth}"
+                                   ViewportSize="{TemplateBinding ViewportWidth}"
+                                   Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

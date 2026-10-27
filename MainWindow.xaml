@@ -1,0 +1,832 @@
+<Window x:Class="MF4CopyStudio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:MF4CopyStudio.Controls"
+        mc:Ignorable="d"
+        Title="Robocopy Tool" 
+        Height="720" Width="1080"
+        MinHeight="640" MinWidth="920"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource PageBackgroundBrush}"
+        FontFamily="{StaticResource UIFont}">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/Colors.xaml"/>
+                <ResourceDictionary Source="Styles/Buttons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Modern Transfer Progress Bar Style -->
+            <Style x:Key="ModernTransferProgressBarStyle" TargetType="ProgressBar">
+                <Setter Property="Background" Value="#E9EEF7"/>
+                <Setter Property="Foreground" Value="#2F6FED"/>
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="Minimum" Value="0"/>
+                <Setter Property="Maximum" Value="100"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ProgressBar">
+                            <Grid ClipToBounds="True">
+                                <!-- Track -->
+                                <Border x:Name="ProgressTrack" 
+                                        Background="{TemplateBinding Background}" 
+                                        CornerRadius="5"/>
+                                
+                                <!-- Indicator - WPF automatically calculates width based on Value -->
+                                <Border x:Name="PART_Indicator" 
+                                        HorizontalAlignment="Left"
+                                        Background="{TemplateBinding Foreground}" 
+                                        CornerRadius="5"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Grid x:Name="ApplicationLayoutRoot" Margin="18">
+        <Grid.RowDefinitions>
+            <!-- Row 0: Main Workspace (Configuration + Task Overview) -->
+            <RowDefinition Height="*" MinHeight="330"/>
+            <!-- Row 1: Global Progress -->
+            <RowDefinition Height="84"/>
+            <!-- Row 2: Spacer between Progress and Activity -->
+            <RowDefinition Height="10"/>
+            <!-- Row 3: Activity Log -->
+            <RowDefinition Height="190"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Main Content (Two Column Layout) - Grid Row 0 -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Left: Configuration -->
+            <Border Grid.Column="0" CornerRadius="{StaticResource CornerRadius}" 
+                    Background="{StaticResource CardBackgroundBrush}" 
+                    BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1"
+                    Padding="{StaticResource CardPadding}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="ConfigurationScrollViewer"
+                              Style="{StaticResource ModernLightScrollViewerStyle}">
+                    <StackPanel>
+                        <!-- Source Directory -->
+                        <controls:PathPicker 
+                            Margin="0,0,0,12"
+                            Label="Source Directory"
+                            PathText="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}"
+                            TargetProperty="SourcePath"/>
+                        
+                        <!-- Target Directory -->
+                        <controls:PathPicker 
+                            Margin="0,0,0,12"
+                            Label="Target Directory"
+                            PathText="{Binding DestinationPath, UpdateSourceTrigger=PropertyChanged}"
+                            TargetProperty="DestinationPath"/>
+                        
+                        <!-- Keywords -->
+                        <StackPanel Margin="0,0,0,12">
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Folder Keywords" FontSize="13" FontWeight="Medium" 
+                                           Foreground="#667085" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SelectedKeywordsSummary}" FontSize="11" 
+                                           Foreground="#667085" VerticalAlignment="Center"/>
+                            </Grid>
+                            <ItemsControl ItemsSource="{Binding KeywordOptions}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Content="{Binding Name}" IsChecked="{Binding IsSelected}" 
+                                                  Style="{StaticResource KeywordChip}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                        
+                        <!-- Advanced Settings -->
+                        <Border Margin="0,0,0,12">
+                            <StackPanel>
+                                <!-- Settings Header Row (clickable) -->
+                                <Border x:Name="AdvancedSettingsHeader"
+                                        Background="Transparent"
+                                        CornerRadius="8"
+                                        Padding="10"
+                                        Cursor="Hand"
+                                        MouseLeftButtonUp="AdvancedSettingsHeader_MouseLeftButtonUp">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#F8FAFC"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <!-- Left: Icon + Title -->
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Viewbox Width="15" Height="15" Margin="0,0,8,0">
+                                                <Path Data="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.48.48 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.12.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.88 8.87a.49.49 0 0 0 .12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.12-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z" 
+                                                      Fill="#667085"/>
+                                            </Viewbox>
+                                            <TextBlock Text="Advanced options" FontSize="12" Foreground="#667085" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <!-- Right: Summary + Chevron -->
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock x:Name="ThreadsSummary" Text="16 threads" FontSize="11" Foreground="#667085" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                            <Viewbox Width="14" Height="14" VerticalAlignment="Center">
+                                                <Path x:Name="ChevronIcon" Data="M3.75 9l6.25 6.25L16.25 9" Stroke="#667085" StrokeThickness="2" Fill="{x:Null}">
+                                                    <Path.RenderTransform>
+                                                        <RotateTransform x:Name="ChevronRotation" Angle="0" CenterX="7" CenterY="7.5"/>
+                                                    </Path.RenderTransform>
+                                                </Path>
+                                            </Viewbox>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                                
+                                <!-- Expandable Content -->
+                                <Border x:Name="AdvancedSettingsContent"
+                                        Visibility="Collapsed"
+                                        Padding="10,0,0,0">
+                                    <StackPanel>
+                                        <!-- Threads Segmented Control -->
+                                        <TextBlock Text="Threads" FontSize="12" Foreground="#667085" Margin="0,10,0,6"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <RadioButton Content="8" GroupName="Threads" IsChecked="{Binding ThreadCount, Converter={StaticResource IntToBoolConverter}, ConverterParameter=8}" 
+                                                         Style="{StaticResource CapsuleRadioButton}" Margin="0,0,4,0"/>
+                                            <RadioButton Content="16" GroupName="Threads" IsChecked="{Binding ThreadCount, Converter={StaticResource IntToBoolConverter}, ConverterParameter=16}" 
+                                                         Style="{StaticResource CapsuleRadioButton}" Margin="4,0,4,0"/>
+                                            <RadioButton Content="32" GroupName="Threads" IsChecked="{Binding ThreadCount, Converter={StaticResource IntToBoolConverter}, ConverterParameter=32}" 
+                                                         Style="{StaticResource CapsuleRadioButton}" Margin="4,0,0,0"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Automatic Run -->
+                                        <StackPanel Margin="0,12,0,0">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Automatic Run" FontSize="12" FontWeight="Medium" Foreground="#101828" Margin="0,0,0,4"/>
+                                                    <TextBlock Text="Check for new files 10 minutes after each completed run." FontSize="10.5" Foreground="#667085" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <ToggleButton Grid.Column="1" IsChecked="{Binding IsAutomaticRunEnabled}" 
+                                                              Width="38" Height="20"
+                                                              Style="{StaticResource ModernToggle}"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+            
+            <!-- Right: Task Summary & Actions -->
+            <Border Grid.Column="1" CornerRadius="{StaticResource CornerRadius}" 
+                    Background="{StaticResource CardBackgroundBrush}" 
+                    BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1"
+                    Padding="{StaticResource CardPadding}" Margin="12,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Task Overview - Status Center (Fluent 2) -->
+                    <Border Grid.Row="0" CornerRadius="{StaticResource CornerRadiusCard}" 
+                            Background="{StaticResource CardBackgroundBrush}" 
+                            BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1"
+                            Padding="16" Margin="0,0,0,16">
+                        <Grid x:Name="TaskOverviewLayout">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="48"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Header (Row 0) with About Button -->
+                            <Grid Grid.Row="0" Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Task Overview Icon -->
+                                <Border Grid.Column="0" Width="28" Height="28" Background="{StaticResource AccentSoftBrush}" 
+                                        CornerRadius="8" VerticalAlignment="Center">
+                                    <Viewbox Width="16" Height="16" Margin="6">
+                                        <Path Data="M9 2H7a2 2 0 0 0-2 2v2H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-2V4a2 2 0 0 0-2-2H9zm0 2h2v2H9V4zM5 8h10v12H5V8z"
+                                              Fill="{StaticResource AccentBrush}"/>
+                                    </Viewbox>
+                                </Border>
+                                
+                                <!-- Task Overview Title -->
+                                <TextBlock Grid.Column="1" Text="Task Overview" FontSize="14" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource PrimaryTextBrush}" 
+                                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                
+                                <!-- About Button (moved from deleted Header) -->
+                                <Button Grid.Column="2"
+                                        x:Name="AboutButton"
+                                        Width="32" Height="32" MinWidth="32" MinHeight="32" 
+                                        Padding="0" Margin="8,0,0,0" 
+                                        HorizontalContentAlignment="Center" 
+                                        VerticalContentAlignment="Center"
+                                        ClipToBounds="False"
+                                        Command="{Binding ShowAboutCommand}" 
+                                        ToolTip="About"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}"
+                                                                CornerRadius="8"
+                                                                SnapsToDevicePixels="True">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                              SnapsToDevicePixels="True"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="#EAF2FF"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsPressed" Value="True">
+                                                                <Setter Property="Background" Value="#DCE9FF"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                    
+                                    <!-- Explicit vector icon: outer circle + info i symbol -->
+                                    <Grid Width="18" Height="18">
+                                        <!-- Outer circle outline -->
+                                        <Ellipse Width="16" Height="16"
+                                                 Stroke="#101828"
+                                                 StrokeThickness="1.5"
+                                                 Fill="Transparent"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 SnapsToDevicePixels="True"/>
+                                        <!-- Info symbol "i" -->
+                                        <StackPanel Orientation="Vertical"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    SnapsToDevicePixels="True">
+                                            <!-- Dot -->
+                                            <Ellipse Width="3" Height="3"
+                                                     Fill="#101828"
+                                                     Margin="0,2,0,0"/>
+                                            <!-- Stem -->
+                                            <Rectangle Width="3" Height="6"
+                                                       Fill="#101828"
+                                                       Margin="0,1,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Button>
+                            </Grid>
+                            
+                            <!-- Status Summary (Row 1) -->
+                            <Border Grid.Row="1" Background="{StaticResource SurfaceSubtleBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,16">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="{StaticResource SuccessBrush}" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Ready" FontSize="12" FontWeight="SemiBold" 
+                                               Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="  ·  Ready to start a new copy cycle" FontSize="12" 
+                                               Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- Details Grid (Row 2) -->
+                            <Grid Grid.Row="2" Margin="0,0,0,4" x:Name="TaskOverviewDetails">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Source" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}"/>
+                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Ellipse Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter Property="Fill" Value="#667085"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SourceStatusText}" Value="Configured">
+                                                        <Setter Property="Fill" Value="#12B76A"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SourceStatusText}" Value="Unavailable">
+                                                        <Setter Property="Fill" Value="#F04438"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding SourceStatusText}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#667085"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SourceStatusText}" Value="Configured">
+                                                        <Setter Property="Foreground" Value="#12B76A"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SourceStatusText}" Value="Unavailable">
+                                                        <Setter Property="Foreground" Value="#F04438"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                                
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Destination" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,8,0,0"/>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                    <Ellipse Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter Property="Fill" Value="#667085"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DestinationStatusText}" Value="Configured">
+                                                        <Setter Property="Fill" Value="#12B76A"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding DestinationStatusText}" Value="Unavailable">
+                                                        <Setter Property="Fill" Value="#F04438"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding DestinationStatusText}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#667085"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DestinationStatusText}" Value="Configured">
+                                                        <Setter Property="Foreground" Value="#12B76A"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding DestinationStatusText}" Value="Unavailable">
+                                                        <Setter Property="Foreground" Value="#F04438"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                                
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Keywords" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedKeywordsSummary}" FontSize="12" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource PrimaryTextBrush}" Margin="0,8,0,0"/>
+                                
+                                <!-- Automatic Run Status -->
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Automatic run" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,8,0,0"/>
+                                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0" MaxWidth="140">
+                                    <Ellipse Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter Property="Fill" Value="#667085"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Off">
+                                                        <Setter Property="Fill" Value="#667085"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Ready after first run">
+                                                        <Setter Property="Fill" Value="#2F6FED"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Countdown">
+                                                        <Setter Property="Fill" Value="#2F6FED"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Waiting for current run">
+                                                        <Setter Property="Fill" Value="#F79009"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Starting">
+                                                        <Setter Property="Fill" Value="#12B76A"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Paused after cancellation">
+                                                        <Setter Property="Fill" Value="#F79009"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding AutomaticRunStatusShortText}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" ToolTip="{Binding AutomaticRunStatusToolTip}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#667085"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Off">
+                                                        <Setter Property="Foreground" Value="#667085"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Ready after first run">
+                                                        <Setter Property="Foreground" Value="#2F6FED"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Countdown">
+                                                        <Setter Property="Foreground" Value="#2F6FED"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Waiting for current run">
+                                                        <Setter Property="Foreground" Value="#F79009"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Starting">
+                                                        <Setter Property="Foreground" Value="#12B76A"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AutomaticRunStatusText}" Value="Paused after cancellation">
+                                                        <Setter Property="Foreground" Value="#F79009"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                                
+                                <!-- Next Run -->
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Next run" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding NextRunText}" FontSize="12" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource PrimaryTextBrush}" Margin="0,8,0,0"/>
+                                
+                                <!-- Row 5: Status -->
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Status" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding CurrentStatusText}" FontSize="12" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource PrimaryTextBrush}" Margin="0,8,0,0"/>
+                            </Grid>
+                            
+                            <!-- Flexible Space (Row 3) -->
+                            <Border Grid.Row="3" Background="Transparent"/>
+                            
+                            <!-- START Button Host (Row 4) -->
+                            <Grid Grid.Row="4" x:Name="StartButtonHost">
+                                <Button x:Name="StartButton" 
+                                        Height="48" MinHeight="48" MinWidth="220"
+                                        Command="{Binding StartCopyCommand}" 
+                                        Style="{StaticResource PrimaryButton}"
+                                        IsEnabled="{Binding IsStartButtonEnabled}"
+                                        Padding="18,0" 
+                                        HorizontalContentAlignment="Center" 
+                                        VerticalContentAlignment="Center"
+                                        HorizontalAlignment="Stretch"
+                                        ClipToBounds="False">
+                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="16"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <Viewbox Grid.Column="0" 
+                                                 Width="16" Height="16" 
+                                                 Stretch="Uniform"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 ClipToBounds="False">
+                                            <Path Data="M3 2L13 8L3 14Z" Fill="White" Stretch="Uniform"/>
+                                        </Viewbox>
+                                        
+                                        <TextBlock Grid.Column="2" 
+                                                   Text="{Binding StartButtonText}" 
+                                                   Foreground="#FFFFFF" 
+                                                   FontSize="13" FontWeight="SemiBold"
+                                                   VerticalAlignment="Center"
+                                                   TextWrapping="NoWrap"
+                                                   TextTrimming="None"/>
+                                    </Grid>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- Scan Results Summary (shown after scan) -->
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding ScanResults}" Visibility="Collapsed">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="6" Padding="8" Margin="0,0,0,6" 
+                                        Background="#F7F8FA" BorderBrush="#E7EAF0" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="{Binding FolderName}" FontSize="13" FontWeight="SemiBold" 
+                                                       Foreground="{StaticResource PrimaryTextBrush}"/>
+                                            <TextBlock Text="{Binding RelativePath}" FontSize="11" 
+                                                       Foreground="{StaticResource SecondaryTextBrush}"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding FileCount}" FontSize="13" FontWeight="SemiBold" 
+                                                       Foreground="{StaticResource PrimaryTextBrush}"/>
+                                            <TextBlock Text="files" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+        </Grid>
+        
+        <!-- Grid Row 1: Independent Transfer Progress Region (Always Visible) -->
+        <Border x:Name="GlobalProgressHost" Grid.Row="1"
+                Margin="0,0"
+                Padding="16,10"
+                Visibility="Visible" Opacity="1"
+                Background="#FFFFFF"
+                BorderBrush="#E4E7EC" BorderThickness="1"
+                CornerRadius="10"
+                ClipToBounds="False">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <!-- Row 0: Header (Status + Current Item + Percentage) -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Row 1: Progress Track (10px height + 8px top margin = 18px minimum) -->
+                    <RowDefinition Height="18"/>
+                    <!-- Row 2: Footer (File count + Trigger info) -->
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header: Status + Current Item + Percentage -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock x:Name="GlobalProgressStatusText" Grid.Column="0"
+                               Text="{Binding ProgressStatusText}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="{Binding ProgressStatusBrush}"
+                               VerticalAlignment="Center"/>
+
+                    <TextBlock x:Name="GlobalProgressCurrentItemText" Grid.Column="1"
+                               Text="{Binding ProgressCurrentItemText}"
+                               Margin="12,0"
+                               FontSize="11.5"
+                               Foreground="#667085"
+                               TextTrimming="CharacterEllipsis"
+                               VerticalAlignment="Center"
+                               ToolTip="{Binding ProgressCurrentItemToolTip}"/>
+
+                    <TextBlock x:Name="GlobalProgressPercentageText" Grid.Column="2"
+                               Text="{Binding ProgressPercentageText}"
+                               FontSize="16" FontWeight="SemiBold"
+                               Foreground="#101828"
+                               VerticalAlignment="Center"/>
+                </Grid>
+
+                <!-- Progress Track with ScaleTransform-based Fill -->
+                <Grid x:Name="ProgressTrack" Grid.Row="1"
+                      Height="10" MinHeight="10" MaxHeight="10"
+                      Margin="0,8,0,0"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Top"
+                      ClipToBounds="True"
+                      SnapsToDevicePixels="True"
+                      UseLayoutRounding="True">
+
+                    <!-- Track Background -->
+                    <Border x:Name="ProgressTrackBackground"
+                            Height="10" MinHeight="10" MaxHeight="10"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            Background="#E2E8F0"
+                            CornerRadius="5"
+                            SnapsToDevicePixels="True"/>
+
+                    <!-- Full-width Fill scaled from left edge -->
+                    <Border x:Name="ProgressFill"
+                            Height="10" MinHeight="10" MaxHeight="10"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            Background="{Binding ProgressFillBrush}"
+                            CornerRadius="5"
+                            RenderTransformOrigin="0,0.5"
+                            Opacity="1"
+                            Visibility="Visible"
+                            Tag="{Binding DisplayProgressRatio}">
+
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ProgressFillScale"
+                                            ScaleX="{Binding Tag, ElementName=ProgressFill}"
+                                            ScaleY="1"/>
+                        </Border.RenderTransform>
+                    </Border>
+
+                    <!-- Independent Shimmer Overlay -->
+                    <Border x:Name="ProgressShimmerClip"
+                            Height="10" MinHeight="10" MaxHeight="10"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            CornerRadius="5"
+                            ClipToBounds="True"
+                            Visibility="{Binding ShimmerVisibility}"
+                            IsHitTestVisible="False"
+                            Tag="{Binding DisplayProgressRatio}">
+
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ProgressShimmerClipScale"
+                                            ScaleX="{Binding Tag, ElementName=ProgressShimmerClip}"
+                                            ScaleY="1"/>
+                        </Border.RenderTransform>
+
+                        <Rectangle x:Name="ProgressShimmer"
+                                   Width="48" Height="10"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Opacity="0.16"
+                                   IsHitTestVisible="False">
+
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#00FFFFFF" Offset="0"/>
+                                    <GradientStop Color="#8AFFFFFF" Offset="0.5"/>
+                                    <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+
+                            <Rectangle.RenderTransform>
+                                <TranslateTransform x:Name="ProgressShimmerTransform" X="-52"/>
+                            </Rectangle.RenderTransform>
+
+                            <Rectangle.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever" Duration="0:0:1.6">
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                From="-52"
+                                                To="1052"
+                                                Duration="0:0:1.6"
+                                                AutoReverse="False"
+                                                RepeatBehavior="Forever"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Rectangle.Triggers>
+                        </Rectangle>
+                    </Border>
+                </Grid>
+
+                <!-- File count and trigger info -->
+                <Grid Grid.Row="2" Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock x:Name="GlobalProgressFileCountText" Grid.Column="0"
+                               Text="{Binding ProgressFileCountText}"
+                               FontSize="11"
+                               Foreground="{StaticResource SecondaryTextBrush}"/>
+
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding ProgressTriggerText}"
+                               FontSize="11"
+                               Foreground="{StaticResource TextTertiaryBrush}"/>
+                </Grid>
+            </Grid>
+        </Border>
+        
+        <!-- Grid Row 2: Spacer between Progress and Activity (10px) -->
+        <Border x:Name="ProgressActivitySpacer" Grid.Row="2"
+                Height="10"
+                Background="Transparent"
+                IsHitTestVisible="False"/>
+        
+        <!-- Grid Row 3: Real-time Log Panel - Activity -->
+        <Border x:Name="ActivityRegion" Grid.Row="3" CornerRadius="{StaticResource CornerRadius}"
+                Background="#1A1F2E" BorderBrush="#2D3748" BorderThickness="1"
+                MaxHeight="240" MinHeight="44"
+                Visibility="{Binding IsLogPanelExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid Margin="12" Height="180">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Log Header -->
+                <Grid Grid.Row="0" Margin="0,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                            <Path Data="M12 8V4l8 8-8 8v-4H4V8z" Fill="{StaticResource ActivityHeaderBrush}"/>
+                        </Viewbox>
+                        <TextBlock Text="Activity" FontSize="13" FontWeight="SemiBold" Foreground="#F9FAFB" 
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding ActivityLog.Count, StringFormat='· {0} entries'}" FontSize="12" 
+                                   Foreground="{StaticResource ActivityTimeBrush}" Margin="8,0,0,0"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock Text="Auto-scroll" FontSize="12" Foreground="#A0AEC0" VerticalAlignment="Center"/>
+                            <ToggleButton IsChecked="{Binding IsAutoScrollEnabled, Mode=TwoWay}" 
+                                          Width="36" Height="20" Margin="6,0,0,0"
+                                          Style="{StaticResource ModernToggle}"/>
+                        </StackPanel>
+                        <Button Content="Clear" Command="{Binding ClearLogsCommand}" 
+                                Style="{StaticResource SubtleButton}" Foreground="#A0AEC0" FontSize="12"/>
+                        <Button Command="{Binding ToggleLogPanelCommand}" Style="{StaticResource IconButton}" 
+                                Width="32" Height="32" MinWidth="32" MinHeight="32" Padding="0" Margin="4,0,0,0"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                ClipToBounds="False" ToolTip="Collapse Activity">
+                            <Viewbox Width="16" Height="16">
+                                <Path Data="M 3,6 L 8,11 L 13,6" Fill="#A0AEC0" Stretch="Uniform"/>
+                            </Viewbox>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                
+                <!-- Log Entries -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" 
+                              x:Name="LogScrollViewer"
+                              Style="{StaticResource ModernDarkScrollViewerStyle}"
+                              Padding="0,4,0,8">
+                    <ItemsControl ItemsSource="{Binding ActivityLog}" Margin="0,2,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Timestamp}" FontSize="12" 
+                                               FontFamily="{StaticResource MonoFont}" Foreground="#718096"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Level}" FontSize="12" FontWeight="SemiBold" 
+                                               FontFamily="{StaticResource MonoFont}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#718096"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Level}" Value="SUCCESS">
+                                                        <Setter Property="Foreground" Value="#48BB78"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Level}" Value="WARNING">
+                                                        <Setter Property="Foreground" Value="#ED8936"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Level}" Value="ERROR">
+                                                        <Setter Property="Foreground" Value="#F56565"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Level}" Value="FOUND">
+                                                        <Setter Property="Foreground" Value="#4299E1"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Level}" Value="COPY">
+                                                        <Setter Property="Foreground" Value="#9F7AEA"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock Grid.Column="2" Text="{Binding Message}" FontSize="13" 
+                                               Foreground="#E2E8F0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

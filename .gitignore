@@ -1,0 +1,66 @@
+# Build output
+bin/
+obj/
+*.pdb
+*.cache
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.nupkg
+
+# VS Code
+.vscode/*.log
+
+# Test results
+TestResults/
+coverage/
+artifacts/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.log
+*.dmp
+
+# User settings (contains local paths)
+settings.json
+
+# Publish output
+publish/
+publish-folder/
+publish-single-debug/
+release-candidate/
+
+# Backup directories
+backup/
+
+# Test output
+tools/output/
+TestData/Destination/
+TestData/TestOutput/
+TestData/**/Destination/
+TestData/**/Output/
+
+# Diagnostics
+MF4CopyStudio-Diagnostics/
+startup-error.txt
+startup-success.txt
+verify-ui-error.json
+verify-ui-success.json
+
+# OS files
+Thumbs.db
+.DS_Store
+.hermes-tmp.*
+.hermes-tmp*/
+release/RobocopyTool.exe
+
+# Internal-only (excluded from public release)
+TestData/
+Testoutput/
+robocopy_fast.bat
+IMPLEMENTATION_STATUS.md
+UI_FIXES_REPORT.md
