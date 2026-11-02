@@ -28,6 +28,12 @@ namespace MF4CopyStudio
             
             try
             {
+                // Initialize WPF-UI Fluent theme (must run before any window is created)
+                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(
+                    applicationTheme: Wpf.Ui.Appearance.ApplicationTheme.Dark,
+                    backgroundEffect: Wpf.Ui.Controls.WindowBackdropType.Mica,
+                    updateAccent: true);
+                
                 if ((IsDiagnosticMode || IsVerifyUiMode) && DiagDir != null)
                 {
                     Directory.CreateDirectory(DiagDir);

@@ -1,15 +1,17 @@
-<Window x:Class="MF4CopyStudio.MainWindow"
+<ui:FluentWindow x:Class="MF4CopyStudio.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:MF4CopyStudio.Controls"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         Title="Robocopy Tool" 
         Height="720" Width="1080"
         MinHeight="640" MinWidth="920"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource PageBackgroundBrush}"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
         FontFamily="{StaticResource UIFont}">
     
     <Window.Resources>
@@ -48,20 +50,25 @@
         </ResourceDictionary>
     </Window.Resources>
     
-    <Grid x:Name="ApplicationLayoutRoot" Margin="18">
+    <Grid x:Name="ApplicationLayoutRoot" Margin="18" Background="Transparent">
         <Grid.RowDefinitions>
-            <!-- Row 0: Main Workspace (Configuration + Task Overview) -->
+            <!-- Row 0: WPF-UI TitleBar (required when ExtendsContentIntoTitleBar=True) -->
+            <RowDefinition Height="Auto"/>
+            <!-- Row 1: Main Workspace (Configuration + Task Overview) -->
             <RowDefinition Height="*" MinHeight="330"/>
-            <!-- Row 1: Global Progress -->
+            <!-- Row 2: Global Progress -->
             <RowDefinition Height="84"/>
-            <!-- Row 2: Spacer between Progress and Activity -->
+            <!-- Row 3: Spacer between Progress and Activity -->
             <RowDefinition Height="10"/>
-            <!-- Row 3: Activity Log -->
+            <!-- Row 4: Activity Log -->
             <RowDefinition Height="190"/>
         </Grid.RowDefinitions>
         
-        <!-- Main Content (Two Column Layout) - Grid Row 0 -->
-        <Grid Grid.Row="0" Margin="0,0,0,12">
+        <!-- TitleBar -->
+        <ui:TitleBar Grid.Row="0" Title="Robocopy Tool" Padding="0,4,0,8"/>
+        
+        <!-- Main Content (Two Column Layout) - Grid Row 1 -->
+        <Grid Grid.Row="1" Margin="0,0,0,12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2.1*"/>
                 <ColumnDefinition Width="1*"/>
@@ -562,8 +569,8 @@
             </Border>
         </Grid>
         
-        <!-- Grid Row 1: Independent Transfer Progress Region (Always Visible) -->
-        <Border x:Name="GlobalProgressHost" Grid.Row="1"
+        <!-- Grid Row 2: Independent Transfer Progress Region (Always Visible) -->
+                <Border x:Name="GlobalProgressHost" Grid.Row="2"
                 Margin="0,0"
                 Padding="16,10"
                 Visibility="Visible" Opacity="1"
@@ -725,14 +732,14 @@
             </Grid>
         </Border>
         
-        <!-- Grid Row 2: Spacer between Progress and Activity (10px) -->
-        <Border x:Name="ProgressActivitySpacer" Grid.Row="2"
+        <!-- Grid Row 3: Spacer between Progress and Activity (10px) -->
+                <Border x:Name="ProgressActivitySpacer" Grid.Row="3"
                 Height="10"
                 Background="Transparent"
                 IsHitTestVisible="False"/>
         
-        <!-- Grid Row 3: Real-time Log Panel - Activity -->
-        <Border x:Name="ActivityRegion" Grid.Row="3" CornerRadius="{StaticResource CornerRadius}"
+        <!-- Grid Row 4: Real-time Log Panel - Activity -->
+        <Border x:Name="ActivityRegion" Grid.Row="4" CornerRadius="{StaticResource CornerRadius}"
                 Background="#1A1F2E" BorderBrush="#2D3748" BorderThickness="1"
                 MaxHeight="240" MinHeight="44"
                 Visibility="{Binding IsLogPanelExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -829,4 +836,4 @@
             </Grid>
         </Border>
     </Grid>
-</Window>
+</ui:FluentWindow>

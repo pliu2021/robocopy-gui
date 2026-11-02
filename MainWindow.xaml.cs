@@ -7,7 +7,7 @@ using MF4CopyStudio.ViewModels;
 
 namespace MF4CopyStudio
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
     {
         private readonly MainViewModel _viewModel;
         
