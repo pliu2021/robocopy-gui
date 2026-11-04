@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using System.Windows.Media;
 using System.Xaml;
 using MF4CopyStudio.Models;
 using MF4CopyStudio.Services;
@@ -20,7 +21,8 @@ namespace MF4CopyStudio
     private static bool IsDiagnoseProgressMode => Environment.GetCommandLineArgs().Contains("--diagnose-progress-ui");
     private static bool IsVerifyStartProgressMode => Environment.GetCommandLineArgs().Contains("--verify-start-progress");
     private static bool IsVerifyStartButtonLayoutMode => Environment.GetCommandLineArgs().Contains("--verify-start-button-layout");
-        private static string? DiagDir => (IsDiagnosticMode || IsVerifyUiMode) ? Path.Combine(Path.GetTempPath(), "MF4CopyStudio-Diagnostics") : null;
+        private static bool IsLayoutProbeMode => Environment.GetCommandLineArgs().Contains("--layout-probe");
+        private static string? DiagDir => (IsDiagnosticMode || IsVerifyUiMode || IsLayoutProbeMode) ? Path.Combine(Path.GetTempPath(), "MF4CopyStudio-Diagnostics") : null;
         
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -28,11 +30,11 @@ namespace MF4CopyStudio
             
             try
             {
-                // Initialize WPF-UI Fluent theme (must run before any window is created)
-                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(
-                    applicationTheme: Wpf.Ui.Appearance.ApplicationTheme.Dark,
-                    backgroundEffect: Wpf.Ui.Controls.WindowBackdropType.Mica,
-                    updateAccent: true);
+                // Initialize WPF-UI Fluent theme (Light + Mica backdrop)
+                                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(
+                                    applicationTheme: Wpf.Ui.Appearance.ApplicationTheme.Light,
+                                    backgroundEffect: Wpf.Ui.Controls.WindowBackdropType.Mica,
+                                    updateAccent: true);
                 
                 if ((IsDiagnosticMode || IsVerifyUiMode) && DiagDir != null)
                 {
@@ -89,6 +91,13 @@ namespace MF4CopyStudio
                 if (IsVerifyUiMode)
                 {
                     RunUiVerification(errorFile);
+                    return;
+                }
+
+                // If --layout-probe mode, dump in-process layout geometry then exit
+                if (IsLayoutProbeMode)
+                {
+                    RunLayoutProbe();
                     return;
                 }
                 
@@ -222,6 +231,96 @@ namespace MF4CopyStudio
             }
         }
         
+        private void RunLayoutProbe()
+        {
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
+
+            var loadedTcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
+            RoutedEventHandler? loadedHandler = null;
+            loadedHandler = (s, e) => { mainWindow.Loaded -= loadedHandler; loadedTcs.SetResult(true); };
+            mainWindow.Loaded += loadedHandler;
+            loadedTcs.Task.Wait(TimeSpan.FromSeconds(10));
+            mainWindow.UpdateLayout();
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"DPI: {VisualTreeHelper.GetDpi(mainWindow).PixelsPerDip}");
+            sb.AppendLine($"Window: ActualWidth={mainWindow.ActualWidth:F1} ActualHeight={mainWindow.ActualHeight:F1}");
+            sb.AppendLine($"Window: RestoredWidth={mainWindow.RestoreBounds.Width:F1}");
+
+            FrameworkElement[] targets =
+            {
+                mainWindow.ApplicationLayoutRoot,
+                mainWindow.ConfigurationCard,
+                mainWindow.GlobalProgressHost,
+                mainWindow.StartButtonHost,
+                mainWindow.StartButton
+            };
+
+            foreach (var fe in targets)
+            {
+                var topLeft = fe.TranslatePoint(new Point(0, 0), mainWindow);
+                var bottomRight = fe.TranslatePoint(new Point(fe.ActualWidth, fe.ActualHeight), mainWindow);
+                sb.AppendLine($"{fe.Name}: L={topLeft.X:F1} T={topLeft.Y:F1} R={bottomRight.X:F1} B={bottomRight.Y:F1} W={fe.ActualWidth:F1} H={fe.ActualHeight:F1}");
+            }
+
+            var taskOverview = FindNamedDescendant(mainWindow, "TaskOverviewLayout") as FrameworkElement;
+            var details = FindNamedDescendant(mainWindow, "TaskOverviewDetails") as FrameworkElement;
+            if (taskOverview != null)
+            {
+                var tl = taskOverview.TranslatePoint(new Point(0, 0), mainWindow);
+                var br = taskOverview.TranslatePoint(new Point(taskOverview.ActualWidth, taskOverview.ActualHeight), mainWindow);
+                sb.AppendLine($"TaskOverviewLayout: L={tl.X:F1} T={tl.Y:F1} R={br.X:F1} B={br.Y:F1} W={taskOverview.ActualWidth:F1} H={taskOverview.ActualHeight:F1}");
+            }
+            if (details != null)
+            {
+                var tl = details.TranslatePoint(new Point(0, 0), mainWindow);
+                var br = details.TranslatePoint(new Point(details.ActualWidth, details.ActualHeight), mainWindow);
+                sb.AppendLine($"TaskOverviewDetails: L={tl.X:F1} T={tl.Y:F1} R={br.X:F1} B={br.Y:F1} W={details.ActualWidth:F1} H={details.ActualHeight:F1}");
+            }
+
+            // find the widest MinWidth contributor in the left column
+            double maxMin = 0; string? maxMinName = null;
+            WalkMinWidths(mainWindow.ApplicationLayoutRoot, ref maxMin, ref maxMinName);
+            sb.AppendLine($"MaxEffectiveMinWidth: {maxMin:F1} on {maxMinName ?? "(none)"}");
+
+            File.WriteAllText(
+                Path.Combine(Path.GetTempPath(), "MF4CopyStudio-Diagnostics", "layout-probe.txt"),
+                sb.ToString());
+            mainWindow.Close();
+            Shutdown(0);
+        }
+
+        private static FrameworkElement? FindNamedDescendant(DependencyObject root, string name)
+        {
+            int Count(DependencyObject d) => VisualTreeHelper.GetChildrenCount(d);
+            for (int i = 0; i < Count(root); i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                if (child is FrameworkElement fe && fe.Name == name) return fe;
+                var deep = FindNamedDescendant(child, name);
+                if (deep != null) return deep;
+            }
+            return null;
+        }
+
+        private static void WalkMinWidths(DependencyObject root, ref double maxMin, ref string? maxMinName)
+        {
+            int Count(DependencyObject d) => VisualTreeHelper.GetChildrenCount(d);
+            for (int i = 0; i < Count(root); i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                if (child is FrameworkElement fe)
+                {
+                    double eff = Math.Max(fe.MinWidth, fe.Margin.Left + fe.Margin.Right);
+                    double score = eff;
+                    if (fe is TextBlock tb) score = Math.Max(score, tb.DesiredSize.Width);
+                    if (score > maxMin) { maxMin = score; maxMinName = $"{fe.GetType().Name}:{fe.Name}"; }
+                }
+                WalkMinWidths(child, ref maxMin, ref maxMinName);
+            }
+        }
+
         private static void HandleException(string title, Exception exception, string? errorFile)
         {
             var details = BuildExceptionDetails(title, exception);

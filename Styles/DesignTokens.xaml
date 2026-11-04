@@ -57,19 +57,19 @@
     <SolidColorBrush x:Key="ErrorSoftBrush" Color="#FEF3F2"/>
     
     <!-- ========================================
-         ACTIVITY COLORS
+         ACTIVITY COLORS (Light Fluent)
          ======================================== -->
-    <SolidColorBrush x:Key="ActivityBackgroundBrush" Color="#111827"/>
-    <SolidColorBrush x:Key="ActivityHeaderBrush" Color="#171F32"/>
-    <SolidColorBrush x:Key="ActivityBorderBrush" Color="#263147"/>
-    <SolidColorBrush x:Key="ActivityTextBrush" Color="#E5E7EB"/>
-    <SolidColorBrush x:Key="ActivityTimeBrush" Color="#7695C8"/>
-    <SolidColorBrush x:Key="ActivityInfoBrush" Color="#8FB3FF"/>
-    <SolidColorBrush x:Key="ActivityFoundBrush" Color="#60A5FA"/>
-    <SolidColorBrush x:Key="ActivityCopyBrush" Color="#A5B4FC"/>
-    <SolidColorBrush x:Key="ActivitySuccessBrush" Color="#6CE9A6"/>
-    <SolidColorBrush x:Key="ActivityWarningBrush" Color="#FEC84B"/>
-    <SolidColorBrush x:Key="ActivityErrorBrush" Color="#FDA29B"/>
+    <SolidColorBrush x:Key="ActivityBackgroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ActivityHeaderBrush" Color="#1F2937"/>
+    <SolidColorBrush x:Key="ActivityBorderBrush" Color="#E4E7EC"/>
+    <SolidColorBrush x:Key="ActivityTextBrush" Color="#1F2937"/>
+    <SolidColorBrush x:Key="ActivityTimeBrush" Color="#667085"/>
+    <SolidColorBrush x:Key="ActivityInfoBrush" Color="#2563EB"/>
+    <SolidColorBrush x:Key="ActivityFoundBrush" Color="#2563EB"/>
+    <SolidColorBrush x:Key="ActivityCopyBrush" Color="#7C3AED"/>
+    <SolidColorBrush x:Key="ActivitySuccessBrush" Color="#16A34A"/>
+    <SolidColorBrush x:Key="ActivityWarningBrush" Color="#D97706"/>
+    <SolidColorBrush x:Key="ActivityErrorBrush" Color="#DC2626"/>
     
     <!-- ========================================
          TYPOGRAPHY

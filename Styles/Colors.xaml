@@ -52,15 +52,15 @@
     <!-- Sizes -->
     <sys:Double x:Key="WindowWidth">1080</sys:Double>
     <sys:Double x:Key="WindowHeight">720</sys:Double>
-    <sys:Double x:Key="MinWindowWidth">920</sys:Double>
-    <sys:Double x:Key="MinWindowHeight">640</sys:Double>
-    <Thickness x:Key="PageMargin">18</Thickness>
-    <Thickness x:Key="CardPadding">16</Thickness>
-    <sys:Double x:Key="CardSpacing">12</sys:Double>
-    <sys:Double x:Key="ControlSpacing">10</sys:Double>
-    <sys:Double x:Key="InputHeight">36</sys:Double>
-    <sys:Double x:Key="ButtonHeight">36</sys:Double>
-    <sys:Double x:Key="PrimaryButtonHeight">48</sys:Double>
+    <sys:Double x:Key="MinWindowWidth">820</sys:Double>
+        <sys:Double x:Key="MinWindowHeight">520</sys:Double>
+        <Thickness x:Key="PageMargin">12</Thickness>
+        <Thickness x:Key="CardPadding">12</Thickness>
+        <sys:Double x:Key="CardSpacing">10</sys:Double>
+        <sys:Double x:Key="ControlSpacing">8</sys:Double>
+        <sys:Double x:Key="InputHeight">32</sys:Double>
+        <sys:Double x:Key="ButtonHeight">32</sys:Double>
+        <sys:Double x:Key="PrimaryButtonHeight">38</sys:Double>
     <CornerRadius x:Key="CornerRadius">10</CornerRadius>
     <CornerRadius x:Key="SmallCornerRadius">7</CornerRadius>
     <sys:Double x:Key="IconSize">16</sys:Double>

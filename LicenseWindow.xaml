@@ -9,7 +9,7 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
         ShowInTaskbar="False"
-        Background="#F8FAFC"
+        Background="{StaticResource PageBackgroundBrush}"
         FontFamily="Segoe UI Variable, Segoe UI, sans-serif">
     
     <Grid Margin="24">
@@ -21,7 +21,7 @@
         
         <!-- Header -->
         <TextBlock Grid.Row="0" Text="MIT License" FontSize="20" FontWeight="SemiBold" 
-                   Foreground="#1F2937" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                   Foreground="{StaticResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="0,0,0,16"/>
         
         <!-- License Text -->
         <TextBox x:Name="LicenseTextBox"
@@ -35,38 +35,14 @@
                  FontSize="12.5"
                  Padding="16"
                  BorderThickness="0"
-                 Background="#FFFFFF"
-                 Foreground="#1F2937"
+                 Background="{StaticResource CardBackgroundBrush}"
+                 Foreground="{StaticResource PrimaryTextBrush}"
                  Margin="0,0,0,20"/>
         
         <!-- Close Button -->
         <Button Grid.Row="2" Content="Close" 
                 Width="112" Height="36" HorizontalAlignment="Center"
-                Click="CloseButton_Click">
-            <Button.Style>
-                <Style TargetType="Button">
-                    <Setter Property="Background" Value="#2563EB"/>
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" 
-                                        CornerRadius="8" Padding="16,8">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#1D4ED8"/>
-                                    </Trigger>
-                                    <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="Background" Value="#1E40AF"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Button.Style>
-        </Button>
+                Style="{StaticResource PrimaryButton}"
+                Click="CloseButton_Click"/>
     </Grid>
 </Window>

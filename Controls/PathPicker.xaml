@@ -8,8 +8,8 @@
     
     <UserControl.Resources>
         <Style TargetType="Border" x:Key="InputBorderStyle">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#D0D5DD"/>
+            <Setter Property="Background" Value="{StaticResource InputBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="BorderBrush" Value="#B2CCFF"/>
@@ -28,14 +28,13 @@
         <TextBlock Grid.Row="0" 
                    Text="{Binding Label, ElementName=Root}"
                    FontSize="12"
-                   Foreground="#667085"
+                   Foreground="{StaticResource SecondaryTextBrush}"
                    Margin="0,0,0,6"/>
         
         <!-- Path Input Border -->
         <Border Grid.Row="1"
                 x:Name="InputBorder"
                 Style="{StaticResource InputBorderStyle}"
-                Background="#FFFFFF"
                 BorderThickness="1"
                 CornerRadius="8"
                 Padding="2">
@@ -50,7 +49,7 @@
                 <!-- Folder Icon -->
                 <Path Grid.Column="0"
                       Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"
-                      Fill="#667085"
+                      Fill="{StaticResource SecondaryTextBrush}"
                       Width="16"
                       Height="16"
                       Margin="10,0,0,0"
@@ -62,7 +61,7 @@
                          Background="Transparent"
                          BorderThickness="0"
                          FontSize="13"
-                         Foreground="#101828"
+                         Foreground="{StaticResource PrimaryTextBrush}"
                          Padding="8,0"
                          VerticalContentAlignment="Center"
                          Cursor="IBeam">
@@ -96,10 +95,10 @@
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#F0F5FF"/>
+                                                <Setter Property="Background" Value="#F3F6FF"/>
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="#E0EAFF"/>
+                                                <Setter Property="Background" Value="#E3EAFF"/>
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -111,7 +110,7 @@
                     <Viewbox Width="18" Height="18">
                         <!-- Ellipsis/Browse icon - three dots -->
                         <Path Data="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                              Fill="#667085"/>
+                              Fill="{StaticResource SecondaryTextBrush}"/>
                     </Viewbox>
                 </Button>
             </Grid>

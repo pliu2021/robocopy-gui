@@ -7,16 +7,17 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- WPF-UI Fluent Design dictionaries -->
+                <!-- WPF-UI Fluent Design fundamentals (load first so explicit keys can override) -->
                 <ui:ThemesDictionary />
-                <ui:ControlsDictionary />
-                <!-- Load design tokens first -->
+                <!-- Load design tokens + legacy brush definitions -->
                 <ResourceDictionary Source="Styles/DesignTokens.xaml"/>
-                <!-- Load custom styles -->
                 <ResourceDictionary Source="Styles/Colors.xaml"/>
+                <!-- Legacy control templates (referenced by StaticResource in MainWindow) -->
                 <ResourceDictionary Source="Styles/Buttons.xaml"/>
                 <ResourceDictionary Source="Styles/ScrollBars.xaml"/>
                 <ResourceDictionary Source="Styles/ModernScrollBars.xaml"/>
+                <!-- WPF-UI control styles loaded LAST so implicit styles win for unthemed controls -->
+                <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
             
             <!-- Converters -->
