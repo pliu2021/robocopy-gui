@@ -1,0 +1,25 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# PowerShell modules
+Modules/
+*.psd1
+*.psm1
+
+# Logs
+Logs/
+*.log
+
+# Backup files
+*.bak
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Build artifacts (if converted to .NET project later)
+obj/
+bin/

@@ -35,28 +35,22 @@ publish-single-debug/
 release-candidate/
 
 # Backup directories: SOURCE snapshots are tracked (宁滥勿缺 - keep everything textual),
-# binary build artifacts inside them stay excluded
-backup/*
-!backup/*/
-backup/*/*
-!backup/*/MainWindow.xaml
-!backup/*/App.xaml
-!backup/*/App.xaml.cs
-!backup/*/AboutWindow.xaml
-!backup/*/AboutWindow.xaml.cs
-!backup/*/LicenseWindow.xaml
-!backup/*/LicenseWindow.xaml.cs
-!backup/*/MF4CopyStudio.csproj
-!backup/*/MF4CopyStudio.sln
-!backup/*/.gitignore
-!backup/*/ViewModels/
-!backup/*/Models/
-!backup/*/Services/
-!backup/*/Styles/
-!backup/*/Controls/
-!backup/*/Converters/
-!backup/*/Assets/
-!backup/*/build-release.cmd
+# binary build artifacts inside them stay excluded.
+# Whitelist by EXTENSION (not directory name) so loose files at any depth survive.
+backup/**
+!backup/**/
+!backup/**/.gitignore
+!backup/**/*.xaml
+!backup/**/*.xaml.cs
+!backup/**/*.cs
+!backup/**/*.csproj
+!backup/**/*.sln
+!backup/**/*.cmd
+!backup/**/*.bat
+!backup/**/*.txt
+!backup/**/*.md
+!backup/**/*.png
+!backup/**/*.ico
 backup/*/bin/
 backup/*/obj/
 backup/*/release/
