@@ -8,6 +8,8 @@ Built with WPF (.NET 10) and [WPF-UI](https://wpfui.lepo.co/) Fluent design — 
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-lightgrey.svg)
 ![.NET](https://img.shields.io/badge/.NET-10.0--windows-blueviolet.svg)
 
+![Robocopy Tool screenshot](screenshot.png)
+
 ## Features
 
 - **Folder keyword filtering** - Filter subfolders by 14 predefined keywords, multi-select supported
