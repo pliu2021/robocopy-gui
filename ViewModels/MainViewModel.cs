@@ -388,7 +388,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             // Execute robocopy for EACH matching folder (not root!)
             StartButtonText = "COPYING...";
             var threadArg = ThreadCount / 8;
-            var robocopyBaseArgs = $"/Z /R:2 /W:2 /MT:{threadArg} /BYTES /ETA /XJ /FP /NDL /NJH /NJS /XC /XN /XO";
+            // Wire persisted retry settings into robocopy (previously hardcoded /R:2 /W:2).
+            // Clamp to robocopy's accepted ranges: /R 0..32767, /W 0..32767 seconds.
+            var settings = _settingsService.LoadSettings();
+            var retryCount = Math.Clamp(settings.RetryCount, 0, 32767);
+            var retryWait = Math.Clamp(settings.RetryWaitSeconds, 0, 32767);
+            var robocopyBaseArgs = $"/Z /R:{retryCount} /W:{retryWait} /MT:{threadArg} /BYTES /ETA /XJ /FP /NDL /NJH /NJS /XC /XN /XO";
             
             foreach (var matchFolder in matchingFolders)
             {
