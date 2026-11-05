@@ -1,4 +1,4 @@
-<Window x:Class="MF4CopyStudio.LicenseWindow"
+<ui:FluentWindow x:Class="MF4CopyStudio.LicenseWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -10,40 +10,53 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
         ShowInTaskbar="False"
-        Background="{StaticResource PageBackgroundBrush}"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Acrylic"
+        Background="Transparent"
         FontFamily="Segoe UI Variable, Segoe UI, sans-serif">
-    
-    <Grid Margin="24">
+
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
-        <!-- Header -->
-        <TextBlock Grid.Row="0" Text="MIT License" FontSize="20" FontWeight="SemiBold" 
-                   Foreground="{StaticResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-        
-        <!-- License Text -->
-        <TextBox x:Name="LicenseTextBox"
-                 Grid.Row="1"
-                 IsReadOnly="True"
-                 TextWrapping="Wrap"
-                 AcceptsReturn="True"
-                 VerticalScrollBarVisibility="Auto"
-                 HorizontalScrollBarVisibility="Disabled"
-                 FontFamily="Cascadia Mono, Consolas"
-                 FontSize="12.5"
-                 Padding="16"
-                 BorderThickness="0"
-                 Background="{StaticResource CardBackgroundBrush}"
-                 Foreground="{StaticResource PrimaryTextBrush}"
-                 Margin="0,0,0,20"/>
-        
-        <!-- Close Button (native Fluent) -->
-        <ui:Button Grid.Row="2" Content="Close"
-                   Appearance="Primary"
-                   Width="112" Height="36" HorizontalAlignment="Center"
-                   Click="CloseButton_Click"/>
+
+        <!-- TitleBar (drag + close on a borderless acrylic window) -->
+        <ui:TitleBar Grid.Row="0" Title="MIT License" Padding="12,0,0,0"/>
+
+        <!-- Content directly on the frosted glass (no nested card) -->
+        <Grid Grid.Row="1" Margin="24,4,24,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <TextBlock Grid.Row="0" Text="MIT License" FontSize="20" FontWeight="SemiBold"
+                       Foreground="{StaticResource PrimaryTextBrush}" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+
+            <!-- License Text: transparent background so the glass shows through -->
+            <TextBox x:Name="LicenseTextBox"
+                     Grid.Row="1"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     AcceptsReturn="True"
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Disabled"
+                     FontFamily="Cascadia Mono, Consolas"
+                     FontSize="12.5"
+                     Padding="16"
+                     BorderThickness="0"
+                     Background="Transparent"
+                     Foreground="{StaticResource PrimaryTextBrush}"
+                     Margin="0,0,0,20"/>
+
+            <!-- Close Button (native Fluent) -->
+            <ui:Button Grid.Row="2" Content="Close"
+                       Appearance="Primary"
+                       Width="112" Height="36" HorizontalAlignment="Center"
+                       Click="CloseButton_Click"/>
+        </Grid>
     </Grid>
-</Window>
+</ui:FluentWindow>

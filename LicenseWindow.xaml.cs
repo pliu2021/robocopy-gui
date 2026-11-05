@@ -5,13 +5,26 @@ using System.Windows;
 
 namespace MF4CopyStudio
 {
-    public partial class LicenseWindow : Window
+    public partial class LicenseWindow : Wpf.Ui.Controls.FluentWindow
     {
         public LicenseWindow()
         {
             InitializeComponent();
             App.PatchAccentResources(Resources);
             LoadLicenseText();
+
+            // Re-seed after WPF-UI re-applies the window theme asynchronously (Loaded+),
+            // then re-apply so the acrylic backdrop + palette stay consistent.
+            Loaded += (_, _) =>
+            {
+                var accent = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#5B7BC7");
+                var accentLight = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#6B89CE");
+                var accentDark = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4A69B5");
+                Wpf.Ui.Appearance.ApplicationAccentColorManager.Apply(accent, accent, accentLight, accentDark);
+                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
+                App.PatchAccentResources(Resources);
+                UpdateLayout();
+            };
             
             // Handle Escape key to close
             KeyDown += (s, e) =>
