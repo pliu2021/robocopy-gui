@@ -150,7 +150,15 @@ Outer container margins and inner card margins must stay symmetric (both cards h
 ### 4. Measuring WPF layout from outside the process is unreliable
 UIAutomation rects include invisible window borders; screen captures through PowerShell/Python run into DPI virtualization and multi-monitor coordinate offsets; `Add-Type` may refuse to compile under redirected TEMP. When in doubt, extend `--layout-probe` and measure **inside** the process in DIP.
 
-### 5. Copy pipeline details
+### 5. Cross-run state must be reset — or the second run breaks
+Two production bugs, one pattern: per-run state that is *written but never cleared* poisons every subsequent cycle.
+
+- **Concurrency gate**: a `SemaphoreSlim(1,1)` acquired with `WaitAsync` at cycle start but never `Release()`d in `finally`. The first cycle ran fine; every later START and every automatic run was rejected with *"Another task is already running."*
+- **Progress dedup keys**: `_processedFileKeys` collects every copied filename for de-duplication, but `ResetProgress()` — the method that clears it — was defined and never called. Cycle 2 actually copied files (robocopy is an external process, it works regardless) while the progress bar sat at *Preparing* forever, because every output line was deduplicated to "already counted".
+
+**Rule:** audit every per-run collection/gate for a matching *release* and *reset* on the cycle path. `finally` is where gates are returned; cycle start is where counters/keys/animation reset.
+
+### 6. Copy pipeline details
 Each selected keyword folder gets its own robocopy invocation with:
 
 ```
@@ -165,6 +173,7 @@ Each selected keyword folder gets its own robocopy invocation with:
 |---|---|
 | 1.0.0 | Initial release: keyword filtering, MF4-only copying, incremental skip, automatic run, activity log (.NET 8) |
 | 1.1.0 | Retarget to .NET 10; WPF-UI 4.3.0 FluentWindow + Mica light theme; always-visible progress strip with shimmer; START button pinned to card bottom with scrollable overview (fixes button clipping at small window sizes); symmetric card margins; `--layout-probe` diagnostics; single-file publish to `release/` |
+| 1.2.0 | All controls migrated to native WPF-UI (`ui:Button`, `ui:ToggleSwitch`, `ui:SymbolIcon`); unified low-saturation steel-blue accent (`#5B7BC7`) via `ApplicationAccentColorManager` + window-scope palette re-seed; START button drop shadow; de-nested Task Overview card; Task Overview value column left-aligned; transparent Activity panel (border only); compact Activity header. Bug fixes: run semaphore released in `finally` (second manual START and automatic second run no longer rejected with "another task is already running"); `ResetProgress()` wired at cycle start (progress bar no longer stuck at *Preparing* during the second copy cycle); auto-run countdown race hardened with a local CTS |
 
 ## Third-party Dependencies
 
