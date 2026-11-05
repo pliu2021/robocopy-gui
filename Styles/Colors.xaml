@@ -3,9 +3,10 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     
     <!-- Colors -->
-    <Color x:Key="PrimaryColor">#2563EB</Color>
-    <Color x:Key="PrimaryHoverColor">#1D4ED8</Color>
-    <Color x:Key="PrimaryPressedColor">#1E40AF</Color>
+    <!-- Low-saturation blue (muted steel blue): unified button/accent color -->
+    <Color x:Key="PrimaryColor">#5B7BC7</Color>
+    <Color x:Key="PrimaryHoverColor">#6B89CE</Color>
+    <Color x:Key="PrimaryPressedColor">#4A69B5</Color>
     <Color x:Key="SuccessColor">#16A34A</Color>
     <Color x:Key="WarningColor">#F59E0B</Color>
     <Color x:Key="ErrorColor">#DC2626</Color>
@@ -38,12 +39,12 @@
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource PrimaryHoverColor}"/>
     <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource PrimaryPressedColor}"/>
-    <SolidColorBrush x:Key="AccentSoftBrush" Color="#EAF2FF"/>
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#EEF2F9"/>
     
     <!-- Surface Colors -->
     <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource CardBackground}"/>
     <SolidColorBrush x:Key="SurfaceSubtleBrush" Color="#F8FAFC"/>
-    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#F0F5FF"/>
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#F2F5FA"/>
     
     <!-- Font Families -->
     <FontFamily x:Key="UIFont">Segoe UI Variable, Segoe UI, Microsoft YaHei UI, sans-serif</FontFamily>
@@ -64,42 +65,5 @@
     <CornerRadius x:Key="CornerRadius">10</CornerRadius>
     <CornerRadius x:Key="SmallCornerRadius">7</CornerRadius>
     <sys:Double x:Key="IconSize">16</sys:Double>
-    
-    <!-- Modern ToggleButton Style for Auto-scroll -->
-    <Style x:Key="ModernToggle" TargetType="ToggleButton">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ToggleButton">
-                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                        <!-- Track -->
-                        <Border x:Name="track" 
-                                Width="36" Height="20" 
-                                CornerRadius="10"
-                                Background="#475467"/>
-                        <!-- Thumb -->
-                        <Ellipse x:Name="thumb" 
-                                 Width="16" Height="16" 
-                                 Fill="White"
-                                 HorizontalAlignment="Left"
-                                 Margin="2,0,0,0"/>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="track" Property="Background" Value="#2563EB"/>
-                            <Setter TargetName="thumb" Property="HorizontalAlignment" Value="Right"/>
-                            <Setter TargetName="thumb" Property="Margin" Value="0,0,2,0"/>
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="track" Property="Opacity" Value="0.9"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="track" Property="Opacity" Value="0.5"/>
-                            <Setter TargetName="thumb" Property="Opacity" Value="0.7"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    
+
 </ResourceDictionary>

@@ -1,6 +1,7 @@
 <Window x:Class="MF4CopyStudio.AboutWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         Title="About Robocopy Tool"
         Width="420"
         MinWidth="420"
@@ -62,17 +63,17 @@
                        TextAlignment="Center" TextWrapping="Wrap" 
                        HorizontalAlignment="Center" Margin="0,8,0,0"/>
 
-            <!-- Buttons -->
+            <!-- Buttons (native Fluent) -->
             <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                <Button x:Name="ViewLicenseButton" Content="View MIT License" 
-                        Width="140" Height="36" HorizontalAlignment="Center" Margin="0,0,12,0"
-                        Style="{StaticResource SecondaryButton}"
-                        Click="ViewLicenseButton_Click"/>
-                
-                <Button x:Name="CloseButton" Content="Close" 
-                        Width="112" Height="36" HorizontalAlignment="Center"
-                        Style="{StaticResource PrimaryButton}"
-                        Click="CloseButton_Click"/>
+                <ui:Button x:Name="ViewLicenseButton" Content="View MIT License"
+                           Appearance="Secondary"
+                           Width="140" Height="36" HorizontalAlignment="Center" Margin="0,0,12,0"
+                           Click="ViewLicenseButton_Click"/>
+
+                <ui:Button x:Name="CloseButton" Content="Close"
+                           Appearance="Primary"
+                           Width="112" Height="36" HorizontalAlignment="Center"
+                           Click="CloseButton_Click"/>
             </StackPanel>
         </Grid>
     </Border>

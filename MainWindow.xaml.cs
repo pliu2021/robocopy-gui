@@ -18,6 +18,24 @@ namespace MF4CopyStudio
             _viewModel = new MainViewModel(new MF4CopyStudio.Services.SettingsService());
             DataContext = _viewModel;
             
+            // FluentWindow keeps its own WPF-UI theme dictionary at window scope,
+            // which beats application scope — patch accent resources here too.
+            App.PatchAccentResources(Resources);
+
+            // WPF-UI re-applies the window theme asynchronously after Loaded
+            // (replacing the resource dictionary instances), so re-seed the
+            // palette and refresh the window's theme dictionaries.
+            Loaded += (_, _) =>
+            {
+                var accent = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#5B7BC7");
+                var accentLight = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#6B89CE");
+                var accentDark = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4A69B5");
+                Wpf.Ui.Appearance.ApplicationAccentColorManager.Apply(accent, accent, accentLight, accentDark);
+                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
+                App.PatchAccentResources(Resources);
+                UpdateLayout();
+            };
+            
             // Bind ShowAboutCommand to actual dialog
             _viewModel.ShowAboutCommand = new AsyncRelayCommand(async () => await ShowAboutDialog());
             

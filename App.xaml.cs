@@ -35,6 +35,15 @@ namespace MF4CopyStudio
                                     applicationTheme: Wpf.Ui.Appearance.ApplicationTheme.Light,
                                     backgroundEffect: Wpf.Ui.Controls.WindowBackdropType.Mica,
                                     updateAccent: true);
+
+                // Override the WPF-UI theme accent with our low-saturation blue using the
+                // official accent manager (regenerates the whole palette properly), then
+                // patch any remaining accent keys in place.
+                var accent = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#5B7BC7");
+                var accentLight = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#6B89CE");
+                var accentDark = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4A69B5");
+                Wpf.Ui.Appearance.ApplicationAccentColorManager.Apply(accent, accent, accentLight, accentDark);
+                ApplyAccentOverride();
                 
                 if ((IsDiagnosticMode || IsVerifyUiMode) && DiagDir != null)
                 {
@@ -231,6 +240,104 @@ namespace MF4CopyStudio
             }
         }
         
+        /// <summary>
+        /// Overrides WPF-UI theme accent resources with the app's low-saturation blue.
+        /// Must run after ApplicationThemeManager.Apply so the OS accent doesn't win.
+        /// Key list taken from Wpf.Ui.dll string table (accent.baml palette).
+        /// FluentWindow keeps its OWN theme dictionary at window scope, which beats
+        /// application scope — so windows must call PatchAccentResources(Resources)
+        /// after InitializeComponent as well.
+        /// </summary>
+        private static void ApplyAccentOverride()
+        {
+            PatchAccentResources(Current.Resources);
+        }
+
+        /// <summary>Recursive accent patcher usable on app- and window-level dictionaries.</summary>
+        internal static void PatchAccentResources(System.Windows.ResourceDictionary root)
+        {
+            System.Windows.Media.Color P(string hex) =>
+                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hex);
+
+            var primary = P("#5B7BC7");
+            var l1 = P("#6B89CE"); var l2 = P("#7E97D6"); var l3 = P("#92A8DE");
+            var d1 = P("#4A69B5"); var d2 = P("#42598F"); var d3 = P("#3A4E7E");
+            var white = System.Windows.Media.Color.FromRgb(0xFF, 0xFF, 0xFF);
+            var disabled = System.Windows.Media.Color.FromArgb(0x51, primary.R, primary.G, primary.B);
+            var elevBorder = System.Windows.Media.Color.FromArgb(0xAB, d1.R, d1.G, d1.B);
+            var selTextBg = System.Windows.Media.Color.FromArgb(0x24, primary.R, primary.G, primary.B);
+
+            System.Windows.Media.SolidColorBrush B(System.Windows.Media.Color c) =>
+                new System.Windows.Media.SolidColorBrush(c);
+
+            // 1) Recurse into ALL merged dictionaries (WPF-UI merges accent.baml deep inside
+            //    its ThemesDictionary) and patch accent entries in place.
+            void Patch(System.Windows.ResourceDictionary dict)
+            {
+                foreach (var key in new[]
+                {
+                    "SystemAccentColor", "SystemAccentColorPrimary", "SystemAccentColorSecondary",
+                    "SystemAccentColorTertiary", "SystemAccentColorDark1", "SystemAccentColorDark2",
+                    "SystemAccentColorDark3", "SystemAccentColorLight1", "SystemAccentColorLight2",
+                    "SystemAccentColorLight3", "AccentColor"
+                })
+                {
+                    if (dict.Contains(key)) dict[key] = primary;
+                }
+
+                foreach (var key in new[]
+                {
+                    "SystemAccentBrush",
+                    "AccentFillColorPrimaryBrush", "AccentFillColorDefaultBrush",
+                    "AccentFillColorSecondaryBrush", "AccentFillColorTertiaryBrush",
+                    "SystemFillColorAttentionBrush"
+                })
+                {
+                    if (dict.Contains(key)) dict[key] = B(primary);
+                }
+
+                if (dict.Contains("AccentFillColorDisabledBrush")) dict["AccentFillColorDisabledBrush"] = B(disabled);
+                if (dict.Contains("AccentFillColorSelectedTextBackgroundBrush")) dict["AccentFillColorSelectedTextBackgroundBrush"] = B(selTextBg);
+                if (dict.Contains("AccentControlElevationBorderBrush")) dict["AccentControlElevationBorderBrush"] = B(elevBorder);
+                if (dict.Contains("TextOnAccentFillColorPrimaryBrush")) dict["TextOnAccentFillColorPrimaryBrush"] = B(white);
+                if (dict.Contains("TextOnAccentFillColorSecondaryBrush")) dict["TextOnAccentFillColorSecondaryBrush"] = B(white);
+                if (dict.Contains("AccentTextFillColorPrimaryBrush")) dict["AccentTextFillColorPrimaryBrush"] = B(primary);
+                if (dict.Contains("AccentTextFillColorSecondaryBrush")) dict["AccentTextFillColorSecondaryBrush"] = B(l1);
+                if (dict.Contains("AccentTextFillColorTertiaryBrush")) dict["AccentTextFillColorTertiaryBrush"] = B(d1);
+
+                foreach (System.Windows.ResourceDictionary child in dict.MergedDictionaries) Patch(child);
+            }
+
+            foreach (var d in root.MergedDictionaries) Patch(d);
+
+            // 2) Root-level entries (they shadow merged-dictionary values).
+            root["SystemAccentColor"] = primary;
+            root["SystemAccentColorPrimary"] = primary;
+            root["SystemAccentColorSecondary"] = primary;
+            root["SystemAccentColorTertiary"] = primary;
+            root["SystemAccentColorDark1"] = d1;
+            root["SystemAccentColorDark2"] = d2;
+            root["SystemAccentColorDark3"] = d3;
+            root["SystemAccentColorLight1"] = l1;
+            root["SystemAccentColorLight2"] = l2;
+            root["SystemAccentColorLight3"] = l3;
+            root["SystemAccentBrush"] = B(primary);
+            root["AccentColor"] = primary;
+            root["AccentFillColorPrimaryBrush"] = B(primary);
+            root["AccentFillColorDefaultBrush"] = B(primary);
+            root["AccentFillColorSecondaryBrush"] = B(primary);
+            root["AccentFillColorTertiaryBrush"] = B(primary);
+            root["AccentFillColorDisabledBrush"] = B(disabled);
+            root["AccentFillColorSelectedTextBackgroundBrush"] = B(selTextBg);
+            root["AccentControlElevationBorderBrush"] = B(elevBorder);
+            root["TextOnAccentFillColorPrimaryBrush"] = B(white);
+            root["TextOnAccentFillColorSecondaryBrush"] = B(white);
+            root["AccentTextFillColorPrimaryBrush"] = B(primary);
+            root["AccentTextFillColorSecondaryBrush"] = B(l1);
+            root["AccentTextFillColorTertiaryBrush"] = B(d1);
+            root["SystemFillColorAttentionBrush"] = B(primary);
+        }
+
         private void RunLayoutProbe()
         {
             var mainWindow = new MainWindow();
@@ -247,6 +354,14 @@ namespace MF4CopyStudio
             sb.AppendLine($"DPI: {VisualTreeHelper.GetDpi(mainWindow).PixelsPerDip}");
             sb.AppendLine($"Window: ActualWidth={mainWindow.ActualWidth:F1} ActualHeight={mainWindow.ActualHeight:F1}");
             sb.AppendLine($"Window: RestoredWidth={mainWindow.RestoreBounds.Width:F1}");
+
+            // accent color verification (unified low-saturation blue)
+            var accentBrush = Application.Current.TryFindResource("AccentFillColorDefaultBrush") as System.Windows.Media.Brush;
+            sb.AppendLine($"AccentResource(AccentFillColorDefaultBrush): {accentBrush}");
+            if (mainWindow.StartButton.Background is System.Windows.Media.SolidColorBrush sbB)
+                sb.AppendLine($"StartButtonBackground: #{sbB.Color.R:X2}{sbB.Color.G:X2}{sbB.Color.B:X2} (a={sbB.Color.A:X2})");
+            else
+                sb.AppendLine($"StartButtonBackground: {mainWindow.StartButton.Background}");
 
             FrameworkElement[] targets =
             {
@@ -277,6 +392,19 @@ namespace MF4CopyStudio
                 var tl = details.TranslatePoint(new Point(0, 0), mainWindow);
                 var br = details.TranslatePoint(new Point(details.ActualWidth, details.ActualHeight), mainWindow);
                 sb.AppendLine($"TaskOverviewDetails: L={tl.X:F1} T={tl.Y:F1} R={br.X:F1} B={br.Y:F1} W={details.ActualWidth:F1} H={details.ActualHeight:F1}");
+
+                // dump every direct child row element of the details grid (alignment audit)
+                int childCount = System.Windows.Media.VisualTreeHelper.GetChildrenCount(details);
+                for (int i = 0; i < childCount; i++)
+                {
+                    if (System.Windows.Media.VisualTreeHelper.GetChild(details, i) is FrameworkElement row)
+                    {
+                        int gridRow = System.Windows.Controls.Grid.GetRow(row);
+                        var rtl = row.TranslatePoint(new Point(0, 0), mainWindow);
+                        var rbr = row.TranslatePoint(new Point(row.ActualWidth, row.ActualHeight), mainWindow);
+                        sb.AppendLine($"  Row{gridRow} {row.GetType().Name}: L={rtl.X:F1} R={rbr.X:F1} T={rtl.Y:F1} B={rbr.Y:F1} W={row.ActualWidth:F1}");
+                    }
+                }
             }
 
             // find the widest MinWidth contributor in the left column

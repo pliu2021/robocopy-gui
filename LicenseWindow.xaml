@@ -1,6 +1,7 @@
 <Window x:Class="MF4CopyStudio.LicenseWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         Title="MIT License"
         Width="680"
         Height="560"
@@ -39,10 +40,10 @@
                  Foreground="{StaticResource PrimaryTextBrush}"
                  Margin="0,0,0,20"/>
         
-        <!-- Close Button -->
-        <Button Grid.Row="2" Content="Close" 
-                Width="112" Height="36" HorizontalAlignment="Center"
-                Style="{StaticResource PrimaryButton}"
-                Click="CloseButton_Click"/>
+        <!-- Close Button (native Fluent) -->
+        <ui:Button Grid.Row="2" Content="Close"
+                   Appearance="Primary"
+                   Width="112" Height="36" HorizontalAlignment="Center"
+                   Click="CloseButton_Click"/>
     </Grid>
 </Window>

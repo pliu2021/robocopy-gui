@@ -10,6 +10,7 @@ namespace MF4CopyStudio
         public LicenseWindow()
         {
             InitializeComponent();
+            App.PatchAccentResources(Resources);
             LoadLicenseText();
             
             // Handle Escape key to close

@@ -63,7 +63,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#F0F4FF"/>
+                            <Setter TargetName="border" Property="Background" Value="#F2F5FA"/>
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
@@ -201,12 +201,12 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#DBEAFE"/>
+                            <Setter TargetName="border" Property="Background" Value="#E3EAF7"/>
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
-                            <Setter Property="Foreground" Value="#1E40AF"/>
+                            <Setter Property="Foreground" Value="#3D5A9E"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#F0F4FF"/>
+                            <Setter TargetName="border" Property="Background" Value="#F2F5FA"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="border" Property="Opacity" Value="0.5"/>
@@ -242,7 +242,7 @@
                             <!-- Checkmark Icon (only when checked) -->
                             <Path x:Name="checkmark"
                                   Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
-                                  Fill="#528BFF"
+                                  Fill="#6B89CE"
                                   Width="12"
                                   Height="12"
                                   Visibility="Collapsed"
@@ -253,14 +253,14 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#EAF2FF"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="#528BFF"/>
-                            <Setter Property="Foreground" Value="#1849A9"/>
+                            <Setter TargetName="border" Property="Background" Value="#EEF2F9"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="#6B89CE"/>
+                            <Setter Property="Foreground" Value="#3D5A9E"/>
                             <Setter TargetName="checkmark" Property="Visibility" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#F0F5FF"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="#B2CCFF"/>
+                            <Setter TargetName="border" Property="Background" Value="#F2F5FA"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="#C3D2EC"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="border" Property="Opacity" Value="0.5"/>
@@ -295,12 +295,12 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#DBEAFE"/>
+                            <Setter TargetName="border" Property="Background" Value="#E3EAF7"/>
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
-                            <Setter Property="Foreground" Value="#1E40AF"/>
+                            <Setter Property="Foreground" Value="#3D5A9E"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#F0F4FF"/>
+                            <Setter TargetName="border" Property="Background" Value="#F2F5FA"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="border" Property="Opacity" Value="0.5"/>

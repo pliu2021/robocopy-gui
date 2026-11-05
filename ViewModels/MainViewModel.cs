@@ -178,7 +178,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         
         // Initialize progress fill brush (default blue)
         _progressFillBrush = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromRgb(0x2F, 0x6F, 0xED));
+            System.Windows.Media.Color.FromRgb(0x5B, 0x7B, 0xC7));
         
         // Subscribe to individual keyword option changes for real-time Task Overview updates
         foreach (var kw in KeywordOptions)
@@ -268,6 +268,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
             // Cancel any existing auto-run countdown
             _autoRunDelayCts?.Cancel();
             _autoRunDelayCts = null;
+            
+            // Reset per-run progress state (dedup keys, counters, animation).
+            // Without this, keys from the previous cycle remain and every
+            // robocopy output line is treated as "already counted" — the
+            // second run would copy files while the progress bar stays at
+            // "Preparing".
+            ResetProgress();
             
             IsCopying = true;
             StartButtonText = "RUNNING...";
@@ -484,6 +491,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
             
             _copyCts?.Dispose();
             _copyCts = null;
+
+            // Release the concurrency gate — without this the semaphore stays at 0
+            // after the first cycle and every later run (manual or automatic) is
+            // rejected with "another task is already running".
+            _runGate.Release();
         }
     }
 
@@ -492,7 +504,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (!IsAutomaticRunEnabled) return;
         
         _autoRunDelayCts?.Cancel();
-        _autoRunDelayCts = new CancellationTokenSource();
+        var delayCts = new CancellationTokenSource();
+        _autoRunDelayCts = delayCts;
         
         AutomaticRunStatusText = "Countdown";
         var startTime = DateTime.Now;
@@ -501,7 +514,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             try
             {
-                while (!_autoRunDelayCts.Token.IsCancellationRequested)
+                // Use the local CTS token (NOT the field): the field can be
+                // cancelled AND nulled by the UI thread mid-loop.
+                while (!delayCts.Token.IsCancellationRequested)
                 {
                     var elapsed = DateTime.Now - startTime;
                     var remaining = AutomaticRunInterval - elapsed;
@@ -514,11 +529,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     }
                     
                     NextRunText = $"Next run in {remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
-                    await Task.Delay(1000, _autoRunDelayCts.Token);
+                    await Task.Delay(1000, delayCts.Token);
                 }
             }
             catch (OperationCanceledException) { }
-        }, _autoRunDelayCts.Token);
+            finally
+            {
+                delayCts.Dispose();
+                if (ReferenceEquals(_autoRunDelayCts, delayCts))
+                {
+                    _autoRunDelayCts = null;
+                }
+            }
+        });
     }
 
     [RelayCommand]
@@ -898,7 +921,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             // Default blue for active states (validating, scanning, copying, etc.)
             _progressFillBrush = new System.Windows.Media.SolidColorBrush(
-                System.Windows.Media.Color.FromRgb(0x2F, 0x6F, 0xED));
+                System.Windows.Media.Color.FromRgb(0x5B, 0x7B, 0xC7));
         }
         OnPropertyChanged(nameof(ProgressFillBrush));
     }
@@ -1177,7 +1200,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         
         // Reset progress fill brush to default blue
         _progressFillBrush = new System.Windows.Media.SolidColorBrush(
-            System.Windows.Media.Color.FromRgb(0x2F, 0x6F, 0xED));
+            System.Windows.Media.Color.FromRgb(0x5B, 0x7B, 0xC7));
         OnPropertyChanged(nameof(ProgressFillBrush));
         OnPropertyChanged(nameof(DisplayProgressRatio));
         

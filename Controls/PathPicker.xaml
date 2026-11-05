@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              mc:Ignorable="d"
              x:Name="Root">
     
@@ -12,7 +13,7 @@
             <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="BorderBrush" Value="#B2CCFF"/>
+                    <Setter Property="BorderBrush" Value="#C3D2EC"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -72,47 +73,18 @@
                     </TextBox.Resources>
                 </TextBox>
                 
-                <!-- Browse Button -->
-                <Button Grid.Column="2"
-                        Click="BrowseButton_Click"
-                        ToolTip="Browse"
-                        Width="36"
-                        Height="36"
-                        Padding="0"
-                        Margin="0,0,2,0"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Cursor="Hand">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}"
-                                                CornerRadius="8"
-                                                Padding="8">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#F3F6FF"/>
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="#E3EAFF"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                    
-                    <Viewbox Width="18" Height="18">
-                        <!-- Ellipsis/Browse icon - three dots -->
-                        <Path Data="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                              Fill="{StaticResource SecondaryTextBrush}"/>
-                    </Viewbox>
-                </Button>
+                <!-- Browse Button (native Fluent, transparent appearance) -->
+                <ui:Button Grid.Column="2"
+                           Click="BrowseButton_Click"
+                           ToolTip="Browse"
+                           Appearance="Secondary"
+                           Width="36" Height="36" Padding="0"
+                           Margin="0,0,2,0"
+                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="MoreHorizontal24" FontSize="18"/>
+                    </ui:Button.Icon>
+                </ui:Button>
             </Grid>
         </Border>
     </Grid>

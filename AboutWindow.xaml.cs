@@ -9,6 +9,7 @@ namespace MF4CopyStudio
         public AboutWindow()
         {
             InitializeComponent();
+            App.PatchAccentResources(Resources);
             Loaded += AboutWindow_Loaded;
         }
         

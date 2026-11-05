@@ -199,9 +199,7 @@
                                                     <TextBlock Text="Automatic Run" FontSize="12" FontWeight="Medium" Foreground="#101828" Margin="0,0,0,4"/>
                                                     <TextBlock Text="Check for new files 10 minutes after each completed run." FontSize="10.5" Foreground="#667085" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <ToggleButton Grid.Column="1" IsChecked="{Binding IsAutomaticRunEnabled}" 
-                                                              Width="38" Height="20"
-                                                              Style="{StaticResource ModernToggle}"/>
+                                                <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding IsAutomaticRunEnabled}"/>
                                             </Grid>
                                         </StackPanel>
                                     </StackPanel>
@@ -224,12 +222,8 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     
-                    <!-- Task Overview - Status Center (Fluent 2) -->
-                    <Border Grid.Row="1" CornerRadius="{StaticResource CornerRadiusCard}" 
-                            Background="{StaticResource CardBackgroundBrush}" 
-                            BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1"
-                            Padding="12" Margin="0,0,0,8">
-                        <Grid x:Name="TaskOverviewLayout">
+                    <!-- Task Overview layout directly inside the card (no nested card frame) -->
+                    <Grid x:Name="TaskOverviewLayout" Grid.Row="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
@@ -244,86 +238,25 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 
-                                <!-- Task Overview Icon -->
-                                <Border Grid.Column="0" Width="28" Height="28" Background="{StaticResource AccentSoftBrush}" 
-                                        CornerRadius="8" VerticalAlignment="Center">
-                                    <Viewbox Width="16" Height="16" Margin="6">
-                                        <Path Data="M9 2H7a2 2 0 0 0-2 2v2H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-2V4a2 2 0 0 0-2-2H9zm0 2h2v2H9V4zM5 8h10v12H5V8z"
-                                              Fill="{StaticResource AccentBrush}"/>
-                                    </Viewbox>
-                                </Border>
-                                
                                 <!-- Task Overview Title -->
-                                <TextBlock Grid.Column="1" Text="Task Overview" FontSize="14" FontWeight="SemiBold" 
+                                <TextBlock Grid.Column="0" Text="Task Overview" FontSize="14" FontWeight="SemiBold" 
                                            Foreground="{StaticResource PrimaryTextBrush}" 
-                                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                           VerticalAlignment="Center"/>
                                 
-                                <!-- About Button (moved from deleted Header) -->
-                                <Button Grid.Column="2"
-                                        x:Name="AboutButton"
-                                        Width="32" Height="32" MinWidth="32" MinHeight="32" 
-                                        Padding="0" Margin="8,0,0,0" 
-                                        HorizontalContentAlignment="Center" 
-                                        VerticalContentAlignment="Center"
-                                        ClipToBounds="False"
-                                        Command="{Binding ShowAboutCommand}" 
-                                        ToolTip="About"
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        Cursor="Hand"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center">
-                                    <Button.Style>
-                                        <Style TargetType="Button">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="Button">
-                                                        <Border Background="{TemplateBinding Background}"
-                                                                CornerRadius="8"
-                                                                SnapsToDevicePixels="True">
-                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                                              SnapsToDevicePixels="True"/>
-                                                        </Border>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="Background" Value="#EAF2FF"/>
-                                                            </Trigger>
-                                                            <Trigger Property="IsPressed" Value="True">
-                                                                <Setter Property="Background" Value="#DCE9FF"/>
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </Button.Style>
-                                    
-                                    <!-- Explicit vector icon: outer circle + info i symbol -->
-                                    <Grid Width="18" Height="18">
-                                        <!-- Outer circle outline -->
-                                        <Ellipse Width="16" Height="16"
-                                                 Stroke="#101828"
-                                                 StrokeThickness="1.5"
-                                                 Fill="Transparent"
-                                                 HorizontalAlignment="Center"
-                                                 VerticalAlignment="Center"
-                                                 SnapsToDevicePixels="True"/>
-                                        <!-- Info symbol "i" -->
-                                        <StackPanel Orientation="Vertical"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    SnapsToDevicePixels="True">
-                                            <!-- Dot -->
-                                            <Ellipse Width="3" Height="3"
-                                                     Fill="#101828"
-                                                     Margin="0,2,0,0"/>
-                                            <!-- Stem -->
-                                            <Rectangle Width="3" Height="6"
-                                                       Fill="#101828"
-                                                       Margin="0,1,0,0"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Button>
+                                <!-- About Button (native Fluent, secondary appearance) -->
+                                <ui:Button Grid.Column="2"
+                                           x:Name="AboutButton"
+                                           Appearance="Secondary"
+                                           Width="32" Height="32"
+                                           Padding="0" Margin="8,0,0,0"
+                                           Command="{Binding ShowAboutCommand}"
+                                           ToolTip="About"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center">
+                                    <ui:Button.Icon>
+                                        <ui:SymbolIcon Symbol="Info24" FontSize="18"/>
+                                    </ui:Button.Icon>
+                                </ui:Button>
                             </Grid>
                             
                             <!-- Scrollable middle zone: status summary + details grid.
@@ -359,7 +292,7 @@
                                 </Grid.RowDefinitions>
                                 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Source" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}"/>
-                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
                                     <Ellipse Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center">
                                         <Ellipse.Style>
                                             <Style TargetType="Ellipse">
@@ -393,7 +326,7 @@
                                 </StackPanel>
                                 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Destination" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,8,0,0"/>
-                                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,8,0,0">
                                     <Ellipse Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center">
                                         <Ellipse.Style>
                                             <Style TargetType="Ellipse">
@@ -432,7 +365,7 @@
                                 
                                 <!-- Automatic Run Status -->
                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Automatic run" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,8,0,0"/>
-                                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0" MaxWidth="140">
+                                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="0,8,0,0" MaxWidth="140">
                                     <Ellipse Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center">
                                         <Ellipse.Style>
                                             <Style TargetType="Ellipse">
@@ -505,44 +438,34 @@
                             <!-- START Button (Row 2) - pinned to card bottom, always visible;
                                  the middle zone above scrolls when space is tight -->
                             <Grid Grid.Row="2" x:Name="StartButtonHost">
-                                <Button x:Name="StartButton" 
-                                        Height="44" MinHeight="44"
-                                        Command="{Binding StartCopyCommand}" 
-                                        Style="{StaticResource PrimaryButton}"
-                                        IsEnabled="{Binding IsStartButtonEnabled}"
-                                        Padding="14,0" 
-                                        HorizontalContentAlignment="Center" 
-                                        VerticalContentAlignment="Center"
-                                        HorizontalAlignment="Stretch"
-                                        ClipToBounds="False">
-                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="16"/>
-                                            <ColumnDefinition Width="8"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <Viewbox Grid.Column="0" 
-                                                 Width="16" Height="16" 
-                                                 Stretch="Uniform"
-                                                 HorizontalAlignment="Center"
-                                                 VerticalAlignment="Center"
-                                                 ClipToBounds="False">
-                                            <Path Data="M3 2L13 8L3 14Z" Fill="White" Stretch="Uniform"/>
-                                        </Viewbox>
-                                        
-                                        <TextBlock Grid.Column="2" 
-                                                   Text="{Binding StartButtonText}" 
-                                                   Foreground="#FFFFFF" 
-                                                   FontSize="13" FontWeight="SemiBold"
-                                                   VerticalAlignment="Center"
-                                                   TextWrapping="NoWrap"
-                                                   TextTrimming="None"/>
-                                    </Grid>
-                                </Button>
+                                <Border>
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="#3A4E7E" BlurRadius="18" ShadowDepth="4" Direction="270"
+                                                          Opacity="0.35"/>
+                                    </Border.Effect>
+                                    <ui:Button x:Name="StartButton"
+                                               Appearance="Primary"
+                                               Height="44" MinHeight="44"
+                                               Command="{Binding StartCopyCommand}"
+                                               IsEnabled="{Binding IsStartButtonEnabled}"
+                                               Padding="14,0"
+                                               HorizontalContentAlignment="Center"
+                                               VerticalContentAlignment="Center"
+                                               HorizontalAlignment="Stretch"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               Margin="2,0,2,2">
+                                        <ui:Button.Icon>
+                                            <ui:SymbolIcon Symbol="Play24" FontSize="16"/>
+                                        </ui:Button.Icon>
+                                        <ui:Button.Content>
+                                            <TextBlock Text="{Binding StartButtonText}"
+                                                       VerticalAlignment="Center"
+                                                       TextWrapping="NoWrap"/>
+                                        </ui:Button.Content>
+                                    </ui:Button>
+                                </Border>
                             </Grid>
-                        </Grid>
-                    </Border>
+                    </Grid>
                     
                     <!-- Scan Results Summary (shown after scan) -->
                     <ItemsControl Grid.Row="1" ItemsSource="{Binding ScanResults}" Visibility="Collapsed">
@@ -744,28 +667,24 @@
                 Background="Transparent"
                 IsHitTestVisible="False"/>
         
-        <!-- Grid Row 4: Real-time Log Panel - Activity -->
+        <!-- Grid Row 4: Real-time Log Panel - Activity (transparent, border only) -->
         <Border x:Name="ActivityRegion" Grid.Row="4" CornerRadius="{StaticResource CornerRadius}"
-                Background="{DynamicResource CardBackgroundBrush}" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1"
+                Background="Transparent" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1"
                 Margin="12,0,12,12"
-                MaxHeight="240" MinHeight="44"
-                Visibility="{Binding IsLogPanelExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Grid Margin="8" Height="140">
+                MaxHeight="240" MinHeight="44">
+            <Grid Margin="8,4,8,4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="26"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
                 <!-- Log Header -->
-                <Grid Grid.Row="0" Margin="0,0,0,4">
+                <Grid Grid.Row="0" Margin="0,0,0,2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                            <Path Data="M12 8V4l8 8-8 8v-4H4V8z" Fill="{StaticResource ActivityHeaderBrush}"/>
-                        </Viewbox>
                         <TextBlock Text="Activity" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource ActivityHeaderBrush}" 
                                    VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding ActivityLog.Count, StringFormat='· {0} entries'}" FontSize="12" 
@@ -775,20 +694,12 @@
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
                             <TextBlock Text="Auto-scroll" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center"/>
-                            <ToggleButton IsChecked="{Binding IsAutoScrollEnabled, Mode=TwoWay}" 
-                                          Width="36" Height="20" Margin="6,0,0,0"
-                                          Style="{StaticResource ModernToggle}"/>
+                            <ui:ToggleSwitch IsChecked="{Binding IsAutoScrollEnabled, Mode=TwoWay}" Margin="6,0,0,0"/>
                         </StackPanel>
-                        <Button Content="Clear" Command="{Binding ClearLogsCommand}" 
-                                Style="{StaticResource SubtleButton}" Foreground="{StaticResource SecondaryTextBrush}" FontSize="12"/>
-                        <Button Command="{Binding ToggleLogPanelCommand}" Style="{StaticResource IconButton}" 
-                                Width="32" Height="32" MinWidth="32" MinHeight="32" Padding="0" Margin="4,0,0,0"
-                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                ClipToBounds="False" ToolTip="Collapse Activity">
-                            <Viewbox Width="16" Height="16">
-                                <Path Data="M 3,6 L 8,11 L 13,6" Fill="{StaticResource SecondaryTextBrush}" Stretch="Uniform"/>
-                            </Viewbox>
-                        </Button>
+                        <ui:Button Content="Clear" Command="{Binding ClearLogsCommand}"
+                                   Appearance="Secondary" FontSize="12"
+                                   Height="24" MinHeight="0" Padding="8,0"
+                                   VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                     </StackPanel>
                 </Grid>
                 

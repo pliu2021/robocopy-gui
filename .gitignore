@@ -34,8 +34,38 @@ publish-folder/
 publish-single-debug/
 release-candidate/
 
-# Backup directories
-backup/
+# Backup directories: SOURCE snapshots are tracked (宁滥勿缺 - keep everything textual),
+# binary build artifacts inside them stay excluded
+backup/*
+!backup/*/
+backup/*/*
+!backup/*/MainWindow.xaml
+!backup/*/App.xaml
+!backup/*/App.xaml.cs
+!backup/*/AboutWindow.xaml
+!backup/*/AboutWindow.xaml.cs
+!backup/*/LicenseWindow.xaml
+!backup/*/LicenseWindow.xaml.cs
+!backup/*/MF4CopyStudio.csproj
+!backup/*/MF4CopyStudio.sln
+!backup/*/.gitignore
+!backup/*/ViewModels/
+!backup/*/Models/
+!backup/*/Services/
+!backup/*/Styles/
+!backup/*/Controls/
+!backup/*/Converters/
+!backup/*/Assets/
+!backup/*/build-release.cmd
+backup/*/bin/
+backup/*/obj/
+backup/*/release/
+backup/*/release-candidate/
+backup/*/TestData/
+backup/*/*.exe
+backup/*/*.dll
+backup/*/*.pdb
+backup/*/*.cache
 
 # Test output
 tools/output/
@@ -56,11 +86,7 @@ Thumbs.db
 .DS_Store
 .hermes-tmp.*
 .hermes-tmp*/
-release/RobocopyTool.exe
 
-# Internal-only (excluded from public release)
-TestData/
+# Release EXE: built artifact, distributed via GitHub Releases (not git)
+release/RobocopyTool.exe
 Testoutput/
-robocopy_fast.bat
-IMPLEMENTATION_STATUS.md
-UI_FIXES_REPORT.md
