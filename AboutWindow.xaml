@@ -36,11 +36,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Icon -->
-            <Viewbox Grid.Row="0" Width="48" Height="48" HorizontalAlignment="Center">
-                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
-                      Fill="{StaticResource PrimaryBrush}"/>
-            </Viewbox>
+            <!-- Icon (app tool icon, embedded resource) -->
+            <Image Grid.Row="0" Width="48" Height="48" HorizontalAlignment="Center"
+                   Source="/icon.png" RenderOptions.BitmapScalingMode="HighQuality"/>
 
             <!-- Title -->
             <TextBlock Grid.Row="1" Text="Robocopy Tool" FontSize="21" FontWeight="SemiBold"

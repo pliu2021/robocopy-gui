@@ -52,6 +52,11 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="WPF-UI" Version="4.3.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- App icon source image (used by About window and packaged with the exe) -->
+    <Resource Include="icon.png" />
+  </ItemGroup>
   
   <ItemGroup>
     <!-- Add Windows Forms for FolderBrowserDialog -->
