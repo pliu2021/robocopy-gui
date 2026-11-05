@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace MF4CopyStudio
 {
-    public partial class AboutWindow : Window
+    public partial class AboutWindow : Wpf.Ui.Controls.FluentWindow
     {
         public AboutWindow()
         {
